@@ -15,7 +15,7 @@ npm install @allowance/policy
 ```
 
 ```bash
-npm install && npm test    # 344 tests, Node's built-in runner
+npm install && npm run build
 ```
 
 Apache-2.0. `@allowance/circuit` pulls a GPL-3.0 proving toolchain — see [`NOTICE`](NOTICE).

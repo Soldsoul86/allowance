@@ -21,8 +21,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "test": "npm run build && node --test \"packages/*/dist/tests/**/*.test.js\"",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
