@@ -22,6 +22,7 @@
   "scripts": {
     "build": "tsc -b",
     "check": "npm run build && node check.mjs",
+    "examples": "npm run build && node examples/run.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
