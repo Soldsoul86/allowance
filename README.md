@@ -20,6 +20,7 @@ Programmable spend authority for AI agents, published on npm under the
 | [`@soldsoul86/policy`](packages/policy) | Rules, guard, ledger, receipts, quotes, signing, x402 transport |
 | [`@soldsoul86/journal`](packages/journal) | Append-only, hash-chained history. Zero dependencies |
 | [`@soldsoul86/circuit`](packages/circuit) | Prove a spend stayed inside a budget without revealing the budget |
+| [`@soldsoul86/anthropic`](packages/anthropic) | The Anthropic SDK behind the guard: swap one import, every call is decided, reserved and settled |
 
 ```bash
 npm install @soldsoul86/policy

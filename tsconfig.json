@@ -1,8 +1,17 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/journal" },
-    { "path": "./packages/policy" },
-    { "path": "./packages/circuit" }
+    {
+      "path": "./packages/journal"
+    },
+    {
+      "path": "./packages/policy"
+    },
+    {
+      "path": "./packages/circuit"
+    },
+    {
+      "path": "./packages/anthropic"
+    }
   ]
 }

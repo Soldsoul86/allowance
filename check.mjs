@@ -244,5 +244,110 @@ section("@soldsoul86/policy: commitments");
     short.constraints.find((c) => c.id === "C6").satisfied === false);
 }
 
+/* -------------------------------------------------------------- anthropic */
+section("@soldsoul86/anthropic: the SDK behind the guard");
+{
+  // The real SDK client, with `fetch` replaced so no network is involved.
+  // Everything else is genuine: APIPromise, MessageStream, the error classes.
+  const { default: Anthropic } = await import("@anthropic-ai/sdk");
+  const { guardMessages, SpendRefusedError, SpendDuplicateError, estimateTokens } = await import("@soldsoul86/anthropic");
+
+  const calls = [];
+  let mode = "ok";
+  const usage = { input_tokens: 100, output_tokens: 50, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 };
+  const message = { id: "msg_1", type: "message", role: "assistant", model: "claude-opus-5",
+    content: [{ type: "text", text: "hi" }], stop_reason: "end_turn", stop_sequence: null, usage };
+  const json = (body, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "request-id": "req_1" } });
+  const sse = [
+    ["message_start", { type: "message_start", message: { ...message, content: [], stop_reason: null, usage: { ...usage, output_tokens: 1 } } }],
+    ["content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }],
+    ["content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "hi" } }],
+    ["content_block_stop", { type: "content_block_stop", index: 0 }],
+    ["message_delta", { type: "message_delta", delta: { stop_reason: "end_turn", stop_sequence: null }, usage: { output_tokens: 50 } }],
+    ["message_stop", { type: "message_stop" }],
+  ].map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join("");
+
+  const fakeFetch = async (url, init) => {
+    calls.push(String(url));
+    if (String(url).endsWith("/count_tokens")) return json({ input_tokens: 123 });
+    if (mode === "http400") return json({ type: "error", error: { type: "invalid_request_error", message: "bad request" } }, 400);
+    if (mode === "network") throw new TypeError("fetch failed");
+    const body = JSON.parse(init.body);
+    if (body.stream) return new Response(sse, { status: 200, headers: { "content-type": "text/event-stream" } });
+    return json(message);
+  };
+  const client = new Anthropic({ apiKey: "test", fetch: fakeFetch, maxRetries: 0 });
+
+  const policy = { account: "acct", version: 1, rules: [
+    { id: "daily", kind: "WINDOW_BUDGET", scope: { kind: "ANY" }, asset: "anthropic:tokens", windowMs: DAY, maxTotal: 40_000n },
+    { id: "models", kind: "DESTINATION_ALLOWLIST", scope: { kind: "ANY" }, destinations: ["anthropic:claude-opus-5"] },
+  ]};
+  const store = new MemoryLedgerStore();
+  const guard = new SpendGuard({ store, policyFor: singlePolicy(policy), clock: new ManualClock(NOW) });
+  let nextId = "";
+  const claude = guardMessages(client, {
+    guard, account: "acct", requester: { kind: "AGENT", agentId: "bot" }, requestId: () => nextId || crypto.randomUUID(),
+  });
+  const params = { model: "claude-opus-5", max_tokens: 16_000, messages: [{ role: "user", content: "hello" }] };
+  const entry = async (id) => (await store.find(id));
+
+  const before = calls.length;
+  const { message: got, settlement } = await claude.createWithSettlement(params);
+  check("an allowed call returns the SDK message and settles at the reported usage",
+    got.content[0].text === "hi" && settlement.actual === 150n && (await entry(settlement.requestId)).state === "SETTLED"
+      && calls.length === before + 1);
+  check("the reservation was the estimate, the settlement the truth",
+    settlement.reserved === estimateTokens(params) && settlement.reserved >= 16_000n && settlement.actual === 150n);
+
+  const blocked = await claude.create({ ...params, model: "claude-haiku-4-5" }).then(() => null, (e) => e);
+  check("a model outside the destination allowlist is refused before any request is made",
+    blocked instanceof SpendRefusedError && blocked.decision.reason === "DESTINATION_NOT_ALLOWED" && calls.length === before + 1);
+
+  mode = "http400";
+  const bad = await claude.createWithSettlement(params).then(() => null, (e) => e);
+  const reversed = (await store.entries("acct")).filter((e) => e.state === "REVERSED");
+  check("an HTTP 400 propagates as the SDK's own error class and the reservation is reversed",
+    bad instanceof Anthropic.BadRequestError && bad.status === 400 && reversed.length === 1);
+
+  mode = "network";
+  const lost = await claude.create(params).then(() => null, (e) => e);
+  const open = (await store.entries("acct")).filter((e) => e.state === "PENDING");
+  check("a connection failure propagates and leaves the reservation open for reconciliation",
+    lost instanceof Anthropic.APIConnectionError && open.length === 1);
+  mode = "ok";
+
+  nextId = "same-id";
+  await claude.create(params);
+  const dup = await claude.create(params).then(() => null, (e) => e);
+  check("a retried request id is refused as a duplicate without a second request",
+    dup instanceof SpendDuplicateError && dup.existing.state === "SETTLED");
+  nextId = "";
+
+  const { stream, settled } = await claude.stream(params);
+  let text = "";
+  for await (const event of stream) if (event.type === "content_block_delta") text += event.delta.text;
+  const streamed = await settled;
+  check("a stream is the SDK's own MessageStream and settles once the final message arrives",
+    text === "hi" && streamed.actual === 150n && (await entry(streamed.requestId)).state === "SETTLED");
+
+  const counted = guardMessages(client, { guard, account: "acct", requester: { kind: "AGENT", agentId: "bot" }, estimate: "count" });
+  check("estimate: \"count\" uses the token counting endpoint plus max_tokens",
+    (await counted.estimate(params)) === 123n + 16_000n && calls.at(-1).endsWith("/count_tokens"));
+
+  const cheapPolicy = { ...policy, rules: [{ id: "spend", kind: "WINDOW_BUDGET", scope: { kind: "ANY" }, asset: "usd:microcents", windowMs: DAY, maxTotal: 10_000_000n }] };
+  const g2 = new SpendGuard({ store: new MemoryLedgerStore(), policyFor: singlePolicy(cheapPolicy), clock: new ManualClock(NOW) });
+  const p2 = guardMessages(client, { guard: g2, account: "acct", requester: { kind: "AGENT", agentId: "bot" }, asset: "usd:microcents",
+    measure: (u) => BigInt(u.input_tokens * 500 + u.output_tokens * 2_500) });
+  const s2 = await p2.createWithSettlement(params);
+  check("measure lets the ledger settle in a currency instead of tokens",
+    s2.settlement.actual === 100n * 500n + 50n * 2_500n);
+
+  const total = (await store.entries("acct")).filter((e) => e.state !== "REVERSED").reduce((n, e) => n + e.amount, 0n);
+  const exhausted = await claude.create({ ...params, max_tokens: 40_000 }).then(() => null, (e) => e);
+  check("the daily budget is judged against settled usage, and an oversized call is refused",
+    exhausted instanceof SpendRefusedError && exhausted.decision.reason === "BUDGET_EXHAUSTED" && total < 40_000n);
+}
+
 process.stdout.write(failures === 0 ? "\nall checks passed\n" : `\n${failures} check(s) FAILED\n`);
 process.exit(failures === 0 ? 0 : 1);
