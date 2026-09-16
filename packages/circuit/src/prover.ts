@@ -1,7 +1,7 @@
 /**
  * Proving and verifying.
  *
- * Where `checkBudgetRelation` in `@allowance/policy` evaluates the relation
+ * Where `checkBudgetRelation` in `@soldsoul86/policy` evaluates the relation
  * over revealed values, this is genuinely zero-knowledge. The verifier is
  * handed four field elements and a proof. It
  * learns that *some* policy hashing to `policyCommit` permitted *some* payment

@@ -1,5 +1,5 @@
 {
-  "name": "@allowance/journal",
+  "name": "@soldsoul86/journal",
   "version": "0.1.0",
   "description": "An append-only, hash-chained, HLC-ordered event journal. Zero dependencies.",
   "keywords": [

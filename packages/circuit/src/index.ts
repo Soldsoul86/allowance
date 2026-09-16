@@ -1,8 +1,8 @@
 /**
- * @allowance/circuit — a Groth16 proof that a payment stayed inside a
+ * @soldsoul86/circuit — a Groth16 proof that a payment stayed inside a
  * private budget.
  *
- * Separate from `@allowance/policy` on purpose. A proving system is a large,
+ * Separate from `@soldsoul86/policy` on purpose. A proving system is a large,
  * opinionated dependency, and the package that decides whether payments are
  * allowed must stay free of it: the engine has to run anywhere, offline, with
  * nothing installed. Proving is an optional capability layered on top.

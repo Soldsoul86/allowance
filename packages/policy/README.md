@@ -1,4 +1,4 @@
-# @allowance/policy
+# @soldsoul86/policy
 
 Programmable spend authority.
 
@@ -6,11 +6,11 @@ Programmable spend authority.
 > agent. **Spend authority belongs to the policy.**
 
 ```bash
-npm install @allowance/policy
+npm install @soldsoul86/policy
 ```
 
 ```ts
-import { SpendGuard, MemoryLedgerStore, singlePolicy, explain } from "@allowance/policy";
+import { SpendGuard, MemoryLedgerStore, singlePolicy, explain } from "@soldsoul86/policy";
 
 const policy = {
   account: "acct:agent", version: 1,
@@ -72,4 +72,4 @@ must verify them first.
 Ships without a test suite. `npm run check` at the repository root exercises
 the claims above against the built output.
 
-Apache-2.0. One dependency (`@allowance/journal`), which has none of its own.
+Apache-2.0. One dependency (`@soldsoul86/journal`), which has none of its own.

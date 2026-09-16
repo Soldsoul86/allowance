@@ -12,7 +12,7 @@ import { generateKeyPairSync } from "node:crypto";
 import {
   Journal, MemoryJournalStore, JournalIntegrityError,
   canonicalJson, verifyEvent, verifyLane,
-} from "@allowance/journal";
+} from "@soldsoul86/journal";
 import {
   SpendGuard, MemoryLedgerStore, JournalLedgerStore, ManualClock, singlePolicy,
   evaluate, validatePolicy, PolicyConfigError, policyDigest, canonicalText,
@@ -20,7 +20,7 @@ import {
   LedgerCommitment, verifyInclusion, emptyRoot,
   BucketCommitment, coveringBuckets, buildBudgetBundle, checkBudgetRelation, IS_ZERO_KNOWLEDGE,
   ed25519Signer, MemoryKeyDirectory, signQuote, verifySignedQuote,
-} from "@allowance/policy";
+} from "@soldsoul86/policy";
 
 let failures = 0;
 const check = (claim, ok, detail = "") => {
@@ -34,7 +34,7 @@ const NOW = 1_758_000_000_000;
 const DAY = 86_400_000;
 
 /* ---------------------------------------------------------------- journal */
-section("@allowance/journal");
+section("@soldsoul86/journal");
 {
   // RFC 8785 section 3.2.3, the RFC's own worked example: its input, and its
   // expected output byte for byte.
@@ -85,7 +85,7 @@ section("@allowance/journal");
 }
 
 /* ----------------------------------------------------------------- policy */
-section("@allowance/policy: the engine");
+section("@soldsoul86/policy: the engine");
 const policy = {
   account: "acct:agent", version: 1,
   rules: [
@@ -125,7 +125,7 @@ const request = { ...draft("req-0", 1_000n), requestedAt: NOW, approvals: [], at
     evaluate({ ...request, requestId: "p", amount: 25_000n }, policy, ledger).outcome === "ALLOW");
 }
 
-section("@allowance/policy: the guard");
+section("@soldsoul86/policy: the guard");
 {
   const clock = new ManualClock(NOW);
   const guard = new SpendGuard({ store: new MemoryLedgerStore(), policyFor: singlePolicy(policy), clock });
@@ -151,7 +151,7 @@ section("@allowance/policy: the guard");
     completed === 5, `completed ${completed}`);
 }
 
-section("@allowance/policy: receipts that verify without trusting the issuer");
+section("@soldsoul86/policy: receipts that verify without trusting the issuer");
 let req, decision, facts, ledgerEntries;
 {
   const journal = await Journal.open({ store: new MemoryJournalStore(), device: "a", lane: "a", now: () => NOW });
@@ -183,7 +183,7 @@ let req, decision, facts, ledgerEntries;
   check("a redacted receipt is reported PARTIAL, never quietly verified", !redacted.verified && redacted.partial);
 }
 
-section("@allowance/policy: signatures");
+section("@soldsoul86/policy: signatures");
 {
   const pem = (k) => k.export({ type: k.type === "private" ? "pkcs8" : "spki", format: "pem" });
   const { privateKey, publicKey } = generateKeyPairSync("ed25519");
@@ -207,7 +207,7 @@ section("@allowance/policy: signatures");
     verifySignedQuote(signed, offline).disposition === "signer_resolution_failed");
 }
 
-section("@allowance/policy: commitments");
+section("@soldsoul86/policy: commitments");
 {
   const sha256empty = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
   check("the empty tree root is SHA-256 of nothing, per RFC 6962", emptyRoot() === sha256empty);

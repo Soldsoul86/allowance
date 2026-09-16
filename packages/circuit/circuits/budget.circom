@@ -16,7 +16,7 @@ include "bitify.circom";
  *
  * ## Completeness is structural here
  *
- * The reference relation in `@allowance/policy` has to *check* that the
+ * The reference relation in `@soldsoul86/policy` has to *check* that the
  * prover supplied every bucket in the window. A circuit does not: `nBuckets`
  * is fixed at compile time, each slot is verified at its own position, and the
  * path directions are the bits of a loop constant rather than a prover input.

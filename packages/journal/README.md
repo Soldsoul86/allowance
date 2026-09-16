@@ -1,13 +1,13 @@
-# @allowance/journal
+# @soldsoul86/journal
 
 An append-only, hash-chained, HLC-ordered event journal. Zero dependencies.
 
 ```bash
-npm install @allowance/journal
+npm install @soldsoul86/journal
 ```
 
 ```ts
-import { Journal, MemoryJournalStore } from "@allowance/journal";
+import { Journal, MemoryJournalStore } from "@soldsoul86/journal";
 
 const journal = await Journal.open({
   store: new MemoryJournalStore(),

@@ -1,10 +1,10 @@
-# @allowance/circuit
+# @soldsoul86/circuit
 
 A Groth16 circuit proving a payment stayed inside a budget **without revealing
 the budget**, the amount, or the ledger.
 
 ```bash
-npm install @allowance/circuit
+npm install @soldsoul86/circuit
 ```
 
 **The published package contains the circuit source, not proving keys.** Run

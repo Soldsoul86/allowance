@@ -1,7 +1,7 @@
 /**
  * A Poseidon Merkle tree, built to match the circuit exactly.
  *
- * `@allowance/policy` commits with SHA-256, which is right for a commitment
+ * `@soldsoul86/policy` commits with SHA-256, which is right for a commitment
  * people verify on a CPU and wrong for one verified inside a circuit: a
  * SHA-256 compression is tens of thousands of constraints, and a 32-leaf tree
  * would need hundreds of them. Poseidon is designed for the field and costs

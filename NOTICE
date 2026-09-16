@@ -10,22 +10,22 @@ covered by the copyright above. Those pulled in at build or run time include:
 
   - TypeScript                    Apache-2.0  (build)
   - @types/node                   MIT         (build)
-  - snarkjs                       GPL-3.0     (runtime, @allowance/circuit)
-  - circomlibjs                   GPL-3.0     (runtime, @allowance/circuit)
-  - circom                        GPL-3.0     (build,   @allowance/circuit)
-  - circomlib                     GPL-3.0     (build,   @allowance/circuit)
+  - snarkjs                       GPL-3.0     (runtime, @soldsoul86/circuit)
+  - circomlibjs                   GPL-3.0     (runtime, @soldsoul86/circuit)
+  - circom                        GPL-3.0     (build,   @soldsoul86/circuit)
+  - circomlib                     GPL-3.0     (build,   @soldsoul86/circuit)
 
 Note on the proving toolchain
 -----------------------------
 
-`@allowance/circuit` depends on snarkjs and circomlibjs, and its build step
+`@soldsoul86/circuit` depends on snarkjs and circomlibjs, and its build step
 uses the circom compiler and circomlib. Those are GPL-3.0. That package is
 therefore the one piece of this repository whose distribution terms are not
 simply Apache-2.0, and anyone redistributing it should take their own advice
 on the combination.
 
-It is a separate package for exactly this reason. `@allowance/policy` and
-`@allowance/journal` have **no third-party runtime dependencies at all**, and
+It is a separate package for exactly this reason. `@soldsoul86/policy` and
+`@soldsoul86/journal` have **no third-party runtime dependencies at all**, and
 depending on them pulls in nothing GPL-licensed.
 
 That absence was not an accident. The engine that decides whether money moves

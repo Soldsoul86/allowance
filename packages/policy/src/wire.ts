@@ -26,7 +26,7 @@
  * question JCS does not answer and does not forbid. A counterparty must be
  * told amounts are strings; they need not be told anything about JCS.
  */
-import { canonicalJson } from "@allowance/journal";
+import { canonicalJson } from "@soldsoul86/journal";
 import { createHash } from "node:crypto";
 
 /** Replaces every `bigint` with its decimal string, recursively. */

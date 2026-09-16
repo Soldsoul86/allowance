@@ -1,5 +1,5 @@
 {
-  "name": "@allowance/policy",
+  "name": "@soldsoul86/policy",
   "version": "0.1.0",
   "description": "Programmable spend authority: a pure, deterministic, explainable policy engine for money movement.",
   "keywords": [
@@ -50,6 +50,6 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@allowance/journal": "0.1.0"
+    "@soldsoul86/journal": "0.1.0"
   }
 }
