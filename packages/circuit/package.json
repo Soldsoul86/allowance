@@ -1,0 +1,63 @@
+{
+  "name": "@allowance/circuit",
+  "version": "0.1.0",
+  "description": "A Groth16 circuit proving a payment stayed inside a private budget.",
+  "keywords": [
+    "zero-knowledge",
+    "groth16",
+    "circom",
+    "snarkjs",
+    "privacy",
+    "budget-proof",
+    "agentic-payments"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/Soldsoul86/allowance/tree/main/packages/circuit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Soldsoul86/allowance.git",
+    "directory": "packages/circuit"
+  },
+  "bugs": {
+    "url": "https://github.com/Soldsoul86/allowance/issues"
+  },
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "dist/src",
+    "circuits",
+    "README.md",
+    "DESIGN.md",
+    "API.md",
+    "TESTS.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
+    "circuit": "node scripts/build-circuit.mjs",
+    "test": "npm run build && node --test --test-reporter=spec \"dist/tests/**/*.test.js\""
+  },
+  "dependencies": {
+    "@allowance/policy": "0.1.0",
+    "circomlibjs": "^0.1.7",
+    "snarkjs": "^0.7.5"
+  },
+  "devDependencies": {
+    "circomlib": "^2.0.5"
+  }
+}

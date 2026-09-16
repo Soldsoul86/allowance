@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/journal" },
+    { "path": "./packages/policy" },
+    { "path": "./packages/circuit" }
+  ]
+}

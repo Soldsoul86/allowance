@@ -1,0 +1,37 @@
+allowance
+Copyright 2026 The allowance Authors
+
+This product includes software originally developed as part of the Orb project
+(https://github.com/Soldsoul86/orb) and extracted from it.
+
+Licensed under the Apache License, Version 2.0. See LICENSE for the full text.
+
+---
+
+Third-party dependencies are licensed by their respective owners and are not
+covered by the copyright above. Those pulled in at build or run time include:
+
+  - TypeScript                    Apache-2.0  (build)
+  - @types/node                   MIT         (build)
+  - snarkjs                       GPL-3.0     (runtime, @allowance/circuit)
+  - circomlibjs                   GPL-3.0     (runtime, @allowance/circuit)
+  - circom                        GPL-3.0     (build,   @allowance/circuit)
+  - circomlib                     GPL-3.0     (build,   @allowance/circuit)
+
+Note on the proving toolchain
+-----------------------------
+
+`@allowance/circuit` depends on snarkjs and circomlibjs, and its build step
+uses the circom compiler and circomlib. Those are GPL-3.0. That package is
+therefore the one piece of this repository whose distribution terms are not
+simply Apache-2.0, and anyone redistributing it should take their own advice
+on the combination.
+
+It is a separate package for exactly this reason. `@allowance/policy` and
+`@allowance/journal` have **no third-party runtime dependencies at all**, and
+depending on them pulls in nothing GPL-licensed.
+
+That absence was not an accident. The engine that decides whether money moves
+was kept dependency-free so it could run anywhere, offline, with nothing
+installed -- and a clean licensing position is a welcome side effect of the
+same decision.

@@ -1,0 +1,7 @@
+# Build outputs of `npm run circuit`, not source.
+#
+# The proving key is 48MB and the r1cs 15MB; neither belongs in history. More
+# to the point, the ceremony that produced them is a local development one, so
+# committing the keys would invite someone to trust artifacts whose randomness
+# was never destroyed. Rebuild them with `npm run circuit`.
+artifacts/

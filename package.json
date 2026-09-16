@@ -1,0 +1,35 @@
+{
+  "name": "allowance",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Programmable spend authority for AI agents. A payment may be requested by anyone; spend authority belongs to the policy.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Soldsoul86/allowance.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Soldsoul86/allowance/issues"
+  },
+  "homepage": "https://github.com/Soldsoul86/allowance#readme",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "tsc -b",
+    "typecheck": "tsc -b && node scripts/typecheck-independently.mjs",
+    "lint": "node scripts/lint.mjs",
+    "test": "npm run build && node --test --test-reporter=spec \"packages/*/dist/tests/**/*.test.js\"",
+    "verify": "npm run lint && npm run typecheck && npm test",
+    "demo": "node examples/agent-budget.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
