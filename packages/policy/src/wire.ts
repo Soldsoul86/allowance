@@ -1,11 +1,11 @@
 /**
  * The one encoding everything hashes and signs over.
  *
- * Three modules needed "canonical bytes for this object" and two of them had
- * grown their own copy. Never duplicating a source of truth
- * applies to an encoding as much as to data: two encoders that agree today
- * will disagree after one of them is edited, and then a signature made by one
- * fails under the other for no visible reason.
+ * Every module that needs "canonical bytes for this object" gets them here.
+ * Never duplicating a source of truth applies to an encoding as much as to
+ * data: two encoders that agree today will disagree after one of them is
+ * edited, and then a signature made by one fails under the other for no
+ * visible reason.
  *
  * Amounts become decimal strings because `canonicalJson` refuses `bigint`,
  * and it is right to. JSON has no unambiguous encoding for one, and a
@@ -18,16 +18,8 @@
  * numbers in the ECMAScript `Number::toString` forms, no incidental
  * whitespace, and NaN/Infinity refused rather than encoded.
  *
- * That is measured, not asserted — `tests/jcs.test.ts` runs the RFC's own
- * §3.2.3 worked example, the surrogate-pair ordering case, and the number
- * forms the RFC calls out.
- *
- * It is worth saying how that fact was arrived at, because the process was
- * worse than the result. Non-conformance was listed as a known limitation for
- * several revisions, on nothing but an assumption. When somebody finally
- * checked, it already conformed on every point. A limitation recorded without
- * being measured is a guess in the costume of a known issue, and this one cost
- * interop credibility for nothing.
+ * That has been checked against the RFC's own §3.2.3 worked example, the
+ * surrogate-pair ordering case, and the number forms the RFC calls out.
  *
  * The one narrowing is `toWire`: a `bigint` becomes a decimal string *before*
  * canonicalisation. That decides what JSON value is being encoded, which is a

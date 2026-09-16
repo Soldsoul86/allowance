@@ -9,10 +9,9 @@
  *
  * The guard authorises against whatever the caller estimated, and cannot
  * interrupt a call already in flight — so an operation budgeted at 5,000 that
- * really consumes 40,000 completes, and the guard can only record the damage
- * (`scripts/agent-budget.mjs`, iteration 9). No amount of cleverness on the
- * buyer's side fixes that, because the buyer does not know the cost until the
- * seller decides it.
+ * really consumes 40,000 completes, and the guard can only record the damage.
+ * No amount of cleverness on the buyer's side fixes that, because the buyer
+ * does not know the cost until the seller decides it.
  *
  * A quote moves the unknown to the party that actually knows it. The seller
  * states a maximum; the buyer authorises *that maximum*, not a guess; and the

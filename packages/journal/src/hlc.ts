@@ -1,9 +1,9 @@
 /**
  * Hybrid Logical Clocks.
  *
- * Global order is derived on read, never stored: public ordering is `(hlc, lane)`,
- * derived on read, never stored. An HLC keeps a monotonic logical counter bounded
- * close to physical time, so causal order survives unsynchronised device clocks.
+ * The public ordering of events is `(hlc, lane)`, derived on read and never
+ * stored. An HLC keeps a monotonic logical counter bounded close to physical
+ * time, so causal order survives unsynchronised device clocks.
  */
 
 /** A Hybrid Logical Clock timestamp. */

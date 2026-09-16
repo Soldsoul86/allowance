@@ -9,14 +9,13 @@
  *
  * **The critical section.** Read, decide and reserve must not interleave with
  * another caller doing the same, *and* the reservation must be durable before
- * the operation runs. An earlier version got the first half by making the
- * whole path synchronous — which works in one process, but forecloses the
- * second half, because a durable append cannot be synchronous.
+ * the operation runs. Making the path synchronous would buy the first half
+ * and forfeit the second, because a durable append cannot be synchronous.
  *
  * So the path is serialised by a promise chain instead: each call queues
  * behind the last, exactly as the Journal serialises its own appends to keep
- * the hash chain intact. Same guarantee as `claimExit`, reached with a lock
- * rather than with synchrony, and durable as well.
+ * the hash chain intact. A lock delivers both guarantees; synchrony delivers
+ * only one.
  *
  * **What happens when the operation fails.** Never assume an action changed
  * reality. A thrown error does not tell you

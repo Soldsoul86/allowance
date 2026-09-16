@@ -106,9 +106,9 @@ export interface PublicKeyRecord {
  * about the signer, only about the lookup. A verifier that reports them alike
  * invites someone to treat an outage as a forgery.
  *
- * Borrowed from the Cycles evidence spec, which distinguishes
+ * The names follow the Cycles evidence spec, which distinguishes
  * `signer_authority_failed` from `signer_resolution_failed` for exactly this
- * reason and does it better than the boolean this replaces.
+ * reason.
  */
 export type KeyLookup =
   | { readonly found: true; readonly record: PublicKeyRecord }

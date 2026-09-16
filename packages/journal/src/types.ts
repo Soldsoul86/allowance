@@ -1,8 +1,7 @@
 /**
- * The Event contract.
+ * The event contract.
  *
- * EVENT_MODEL.md §3 and `contracts/Event.md`. The journal treats `payload` as
- * opaque; meaning is assigned by projections. Nothing here may be mutated:
+ * The journal treats `payload` as opaque; meaning is assigned by projections.
  * History is never mutated: events are never edited, reordered or deleted.
  */
 import type { Hlc } from "./hlc.js";
@@ -25,7 +24,7 @@ export interface Integrity {
 }
 
 /** The immutable atomic unit of history. */
-export interface OrbEvent<Payload = unknown> {
+export interface JournalEvent<Payload = unknown> {
   readonly id: string;
   readonly lane: LaneId;
   readonly device: string;

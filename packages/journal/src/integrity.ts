@@ -6,7 +6,7 @@
  * hash itself, and commits to the predecessor's hash.
  */
 import { createHash } from "node:crypto";
-import type { OrbEvent } from "./types.js";
+import type { JournalEvent } from "./types.js";
 import { JournalIntegrityError } from "./types.js";
 
 /**
@@ -40,7 +40,7 @@ export function canonicalJson(value: unknown): string {
 }
 
 /** The bytes an event commits to. Excludes `integrity.hash`, includes `integrity.previous`. */
-export function eventPreimage(event: Omit<OrbEvent, "integrity"> & { previous: string | null }): string {
+export function eventPreimage(event: Omit<JournalEvent, "integrity"> & { previous: string | null }): string {
   return canonicalJson({
     id: event.id,
     lane: event.lane,
@@ -55,12 +55,12 @@ export function eventPreimage(event: Omit<OrbEvent, "integrity"> & { previous: s
   });
 }
 
-export function hashEvent(event: Omit<OrbEvent, "integrity"> & { previous: string | null }): string {
+export function hashEvent(event: Omit<JournalEvent, "integrity"> & { previous: string | null }): string {
   return createHash("sha256").update(eventPreimage(event), "utf8").digest("hex");
 }
 
 /** Recomputes an event's hash and checks it against the recorded one. */
-export function verifyEvent(event: OrbEvent): boolean {
+export function verifyEvent(event: JournalEvent): boolean {
   return hashEvent({ ...event, previous: event.integrity.previous }) === event.integrity.hash;
 }
 
@@ -70,7 +70,7 @@ export function verifyEvent(event: OrbEvent): boolean {
  *
  * @throws {JournalIntegrityError} naming the first event that fails.
  */
-export function verifyLane(events: readonly OrbEvent[]): void {
+export function verifyLane(events: readonly JournalEvent[]): void {
   let previousHash: string | null = null;
   let previousPhysical = -1;
   let previousCounter = -1;

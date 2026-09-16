@@ -16,12 +16,12 @@ include "bitify.circom";
  *
  * ## Completeness is structural here
  *
- * The reference implementation had to *check* that the prover supplied every
- * bucket in the window. A circuit does not: `nBuckets` is fixed at compile
- * time, each slot is verified at its own position, and the path directions are
- * the bits of a loop constant rather than a prover input. There is no slot to
- * leave empty and no way to move a leaf. Omission is not refused — it is
- * unrepresentable.
+ * The reference relation in `@allowance/policy` has to *check* that the
+ * prover supplied every bucket in the window. A circuit does not: `nBuckets`
+ * is fixed at compile time, each slot is verified at its own position, and the
+ * path directions are the bits of a loop constant rather than a prover input.
+ * There is no slot to leave empty and no way to move a leaf. Omission is not
+ * refused — it is unrepresentable.
  *
  * ## Range checks are not optional
  *

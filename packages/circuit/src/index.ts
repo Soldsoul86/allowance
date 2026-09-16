@@ -5,9 +5,7 @@
  * Separate from `@allowance/policy` on purpose. A proving system is a large,
  * opinionated dependency, and the package that decides whether payments are
  * allowed must stay free of it: the engine has to run anywhere, offline, with
- * nothing installed. Proving is an optional capability layered on top, which
- * is the same reason model providers live behind ports rather than in the
- * kernel.
+ * nothing installed. Proving is an optional capability layered on top.
  */
 export { FIELD_MODULUS, MAX_AMOUNT, FieldEncodingError, fieldFor, amountToField, timeToField } from "./field.js";
 export { PoseidonBucketTree, loadPoseidon } from "./tree.js";

@@ -7,11 +7,10 @@
  * and on its own it is not enough — a system that only accumulates
  * unresolvable reservations is honestly stuck rather than safe.
  *
- * The governing rule says how it ends: *the loop closes only
- * when a Sensor confirms that reality occurred as expected.* {@link
- * SpendObserver} is that sensor. It is the one component here that looks at
- * the outside world — a vendor's usage API, a billing export, a chain, a
- * human reading a statement — and reports what it found.
+ * The loop closes only when a sensor confirms what actually happened.
+ * {@link SpendObserver} is that sensor. It is the one component here that
+ * looks at the outside world — a vendor's usage API, a billing export, a
+ * chain, a human reading a statement — and reports what it found.
  *
  * The rule that makes this trustworthy is what happens on `UNKNOWN`: nothing.
  * The reservation stays open, keeps consuming budget, and is offered again

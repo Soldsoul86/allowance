@@ -71,8 +71,7 @@ export type Rule =
    * distinct approvers.
    *
    * "At or above", not "above": a threshold you can sit precisely on without
-   * consequence is not a threshold. The hard-exit sentinel makes the same
-   * choice for the same reason.
+   * consequence is not a threshold.
    */
   | (RuleBase & {
       readonly kind: "APPROVAL_THRESHOLD";

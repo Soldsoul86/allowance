@@ -1,8 +1,9 @@
 /**
  * Proving and verifying.
  *
- * This is the first thing in the whole stack that is genuinely
- * zero-knowledge. The verifier is handed four field elements and a proof. It
+ * Where `checkBudgetRelation` in `@allowance/policy` evaluates the relation
+ * over revealed values, this is genuinely zero-knowledge. The verifier is
+ * handed four field elements and a proof. It
  * learns that *some* policy hashing to `policyCommit` permitted *some* payment
  * hashing to `requestCommit` against a ledger committed to by `bucketRoot`. It
  * does not learn the limit, and it does not learn a single one of the

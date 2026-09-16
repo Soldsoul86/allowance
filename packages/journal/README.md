@@ -15,7 +15,11 @@ const journal = await Journal.open({
   lane: "laptop",
 });
 
-await journal.append({ schema: { name: "note", version: 1 }, payload: { text: "hello" } });
+await journal.appendOne({
+  type: "note.written",
+  schema: { id: "note", version: 1 },
+  payload: { text: "hello" },
+});
 const events = await journal.readAll();
 ```
 

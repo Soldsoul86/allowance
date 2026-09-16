@@ -22,7 +22,13 @@ const policy = {
 
 const guard = new SpendGuard({ store: new MemoryLedgerStore(), policyFor: singlePolicy(policy) });
 
-const result = await guard.run(request, async (grant) => {
+const draft = {
+  requestId: "req-1", account: "acct:agent",
+  requester: { kind: "AGENT", agentId: "research" },
+  asset: "anthropic:tokens", amount: 4_000n, destination: "vendor:messages-api",
+};
+
+const result = await guard.run(draft, async (grant) => {
   const response = await callTheModel();
   grant.report(BigInt(response.usage.total_tokens));   // what it actually cost
   return response;

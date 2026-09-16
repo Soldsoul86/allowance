@@ -10,7 +10,7 @@ import { hashEvent, verifyLane } from "./integrity.js";
 import { newEventId } from "./ids.js";
 import type { JournalStore } from "./store.js";
 import { MemoryJournalStore } from "./store.js";
-import type { EventDraft, LaneId, OrbEvent } from "./types.js";
+import type { EventDraft, LaneId, JournalEvent } from "./types.js";
 import { JournalIntegrityError } from "./types.js";
 
 export interface JournalOptions {
@@ -23,7 +23,7 @@ export interface JournalOptions {
 }
 
 /** Notified after events become durable. Listeners must not throw. */
-export type JournalListener = (events: readonly OrbEvent[]) => void;
+export type JournalListener = (events: readonly JournalEvent[]) => void;
 
 export class Journal {
   readonly lane: LaneId;
@@ -92,7 +92,7 @@ export class Journal {
    * Appends are serialised: concurrent callers are ordered by arrival, and each
    * batch's ids, HLCs and hashes are assigned without interleaving.
    */
-  async append(drafts: readonly EventDraft[]): Promise<readonly OrbEvent[]> {
+  async append(drafts: readonly EventDraft[]): Promise<readonly JournalEvent[]> {
     if (!this.#opened) throw new Error("journal is not open");
     if (drafts.length === 0) return [];
 
@@ -102,14 +102,14 @@ export class Journal {
   }
 
   /** Convenience for the common single-event case. */
-  async appendOne<P>(draft: EventDraft<P>): Promise<OrbEvent<P>> {
+  async appendOne<P>(draft: EventDraft<P>): Promise<JournalEvent<P>> {
     const [event] = await this.append([draft]);
     if (!event) throw new Error("append produced no event");
-    return event as OrbEvent<P>;
+    return event as JournalEvent<P>;
   }
 
-  async #appendNow(drafts: readonly EventDraft[]): Promise<readonly OrbEvent[]> {
-    const events: OrbEvent[] = [];
+  async #appendNow(drafts: readonly EventDraft[]): Promise<readonly JournalEvent[]> {
+    const events: JournalEvent[] = [];
     let previous = this.#head;
 
     for (const draft of drafts) {
@@ -142,7 +142,7 @@ export class Journal {
    * Adopts events from a foreign lane (merge is a set union of
    * immutable lanes). Rejects anything claiming to be this device's lane.
    */
-  async replicate(lane: LaneId, events: readonly OrbEvent[]): Promise<void> {
+  async replicate(lane: LaneId, events: readonly JournalEvent[]): Promise<void> {
     if (lane === this.lane) {
       throw new JournalIntegrityError("a device never accepts writes to its own lane", { lane });
     }
@@ -164,13 +164,13 @@ export class Journal {
   }
 
   /** Every event in every lane, unordered. Use `replay` for ordered folding. */
-  async readAll(): Promise<readonly OrbEvent[]> {
-    const out: OrbEvent[] = [];
+  async readAll(): Promise<readonly JournalEvent[]> {
+    const out: JournalEvent[] = [];
     for (const lane of await this.#store.lanes()) out.push(...(await this.#store.read(lane)));
     return out;
   }
 
-  async readLane(lane: LaneId): Promise<readonly OrbEvent[]> {
+  async readLane(lane: LaneId): Promise<readonly JournalEvent[]> {
     return this.#store.read(lane);
   }
 

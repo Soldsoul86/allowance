@@ -1,9 +1,9 @@
 /**
  * Append-only file store: one newline-delimited JSON file per lane.
  *
- * Durability matters here because crash recovery reads this back (§12 of the
- * executor's requirements). Every append is `write` + `fsync` before resolving,
- * so a resolved append survives process and machine death.
+ * Durability matters here because crash recovery reads this back. Every
+ * append is `write` + `fsync` before resolving, so a resolved append survives
+ * process and machine death.
  *
  * A torn trailing line — the signature of a crash mid-write — is discarded on
  * read rather than repaired, because history is never mutated and a
@@ -13,7 +13,7 @@ import { open, mkdir, readFile, readdir } from "node:fs/promises";
 import type { FileHandle } from "node:fs/promises";
 import { join } from "node:path";
 import type { JournalStore } from "./store.js";
-import type { LaneId, OrbEvent } from "./types.js";
+import type { LaneId, JournalEvent } from "./types.js";
 
 const LANE_FILE_SUFFIX = ".lane.jsonl";
 
@@ -49,7 +49,7 @@ export class FileJournalStore implements JournalStore {
     return handle;
   }
 
-  async append(lane: LaneId, events: readonly OrbEvent[]): Promise<void> {
+  async append(lane: LaneId, events: readonly JournalEvent[]): Promise<void> {
     if (this.#closed) throw new Error("journal store is closed");
     if (events.length === 0) return;
 
@@ -67,7 +67,7 @@ export class FileJournalStore implements JournalStore {
     await next;
   }
 
-  async read(lane: LaneId): Promise<readonly OrbEvent[]> {
+  async read(lane: LaneId): Promise<readonly JournalEvent[]> {
     let text: string;
     try {
       text = await readFile(laneFile(this.#directory, lane), "utf8");
@@ -76,11 +76,11 @@ export class FileJournalStore implements JournalStore {
       throw error;
     }
 
-    const events: OrbEvent[] = [];
+    const events: JournalEvent[] = [];
     for (const line of text.split("\n")) {
       if (line === "") continue;
       try {
-        events.push(JSON.parse(line) as OrbEvent);
+        events.push(JSON.parse(line) as JournalEvent);
       } catch {
         // A torn final line is a crash artefact, not history. Anything earlier
         // being unparsable is corruption, and must surface.

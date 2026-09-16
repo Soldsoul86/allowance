@@ -29,7 +29,7 @@
  * reports exactly which checks it could and could not perform — a verifier
  * that quietly downgraded would be worse than one that refuses.
  */
-import { verifyEvent, type OrbEvent } from "@allowance/journal";
+import { verifyEvent, type JournalEvent } from "@allowance/journal";
 
 import { canonicalText, digestOf } from "./wire.js";
 
@@ -69,7 +69,7 @@ export interface SpendReceipt {
   /** The ledger as the decision saw it. `null` when redacted. */
   readonly ledgerContext: readonly LedgerEntry[] | null;
   /** The journal events behind this request, each self-verifying. */
-  readonly facts: readonly OrbEvent[];
+  readonly facts: readonly JournalEvent[];
   readonly outcome: ReceiptOutcome;
   /**
    * The seller's commitment this payment was made against. `null` when the
@@ -82,7 +82,7 @@ export interface BuildReceiptInput {
   readonly request: SpendRequest;
   readonly decision: Decision;
   readonly outcome: ReceiptOutcome;
-  readonly facts: readonly OrbEvent[];
+  readonly facts: readonly JournalEvent[];
   readonly issuedAt: number;
   /** Omit to redact. See the note on the trade-off above. */
   readonly policy?: SpendPolicy;

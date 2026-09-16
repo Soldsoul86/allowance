@@ -3,8 +3,7 @@
  *
  * A Merkle tree over individual ledger entries proves membership and nothing
  * else. A prover who leaves one out produces a smaller sum, and every
- * inclusion proof still checks — the gap `circuit.ts` used to report as an
- * assumption.
+ * inclusion proof still checks.
  *
  * The fix is not more cryptography. It is taking away the prover's choice of
  * what to supply.

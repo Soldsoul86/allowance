@@ -54,13 +54,13 @@ process.stdout.write(info.split("\n").filter((l) => l.includes("Constraints") ||
 process.stdout.write("\nceremony (development only — see the header)\n");
 snarkjs("powersoftau", "new", "bn128", "17", join(artifacts, "pot_0.ptau"), "-v");
 snarkjs("powersoftau", "contribute", join(artifacts, "pot_0.ptau"), join(artifacts, "pot_1.ptau"),
-  "--name=dev", "-v", "-e=orb-development-entropy-not-for-production");
+  "--name=dev", "-v", "-e=allowance-development-entropy-not-for-production");
 snarkjs("powersoftau", "prepare", "phase2", join(artifacts, "pot_1.ptau"), join(artifacts, "pot_final.ptau"), "-v");
 
 process.stdout.write("\ngroth16 setup\n");
 snarkjs("groth16", "setup", join(artifacts, "budget.r1cs"), join(artifacts, "pot_final.ptau"), join(artifacts, "budget_0.zkey"));
 snarkjs("zkey", "contribute", join(artifacts, "budget_0.zkey"), join(artifacts, "budget.zkey"),
-  "--name=dev", "-v", "-e=orb-development-entropy-not-for-production");
+  "--name=dev", "-v", "-e=allowance-development-entropy-not-for-production");
 snarkjs("zkey", "export", "verificationkey", join(artifacts, "budget.zkey"), join(artifacts, "verification_key.json"));
 
 // The intermediates are large and reproducible; only the final keys are kept.

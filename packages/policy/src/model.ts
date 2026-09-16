@@ -76,9 +76,8 @@ export interface Approval {
  *
  * Note what is absent: no limit, no threshold, no override, no priority, no
  * "urgent" flag. A request carries facts about itself and nothing that can
- * widen its own authority. This mirrors the executor's governing rule — entry
- * may come from outside, exit authority stays local — one layer down: **a
- * payment may be requested by anyone; spend authority belongs to the policy.**
+ * widen its own authority: **a payment may be requested by anyone; spend
+ * authority belongs to the policy.**
  */
 export interface SpendRequest {
   readonly requestId: string;
@@ -127,9 +126,7 @@ export function distinctApprovers(request: SpendRequest): readonly string[] {
  * - **`memo`** — cosmetic.
  *
  * The encoding is `wire.ts`'s canonical form: sorted keys, amounts as decimal
- * strings. It conforms to RFC 8785 (JCS), which some protocols mandate — see
- * `tests/jcs.test.ts`, which measures it against the RFC rather than restating
- * the claim.
+ * strings. It conforms to RFC 8785 (JCS), which some protocols mandate.
  */
 export function requestIntent(request: SpendRequest): string {
   return digestOf({

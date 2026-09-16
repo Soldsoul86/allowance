@@ -12,10 +12,10 @@
  * - **Deny by default.** No policy, no matching rule, an unrecognised account:
  *   all deny. An authorization system whose failure mode is "allow" is not an
  *   authorization system.
- * - **Every rule is evaluated, not just the first to fail.** Every decision
- *   requires that a decision be explainable; a decision that names one
- *   tripped limit while hiding the four it passed cannot be audited, and
- *   cannot tell an operator how close the others came.
+ * - **Every rule is evaluated, not just the first to fail.** A decision must
+ *   be explainable; one that names a single tripped limit while hiding the
+ *   four it passed cannot be audited, and cannot tell an operator how close
+ *   the others came.
  * - **Evaluation is idempotent.** The request under evaluation is excluded
  *   from its own ledger, so re-running a decision for an in-flight request
  *   returns the same answer instead of counting the request against itself.

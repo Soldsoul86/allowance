@@ -1,15 +1,10 @@
 /**
  * Where reservations live.
  *
- * ## A correction, stated plainly
- *
- * The first version of this file made every method synchronous and argued that
- * synchrony was what made the guard's critical section safe. That was half
- * right. Synchrony is *sufficient* for atomicity on a single-threaded runtime
- * — but it is not *necessary*, and it buys atomicity at the price of
- * durability, because a durable append cannot be synchronous.
- *
- * The invariant was never "the critical section is synchronous". It is:
+ * The store is asynchronous on purpose. Synchrony would be *sufficient* for
+ * atomicity on a single-threaded runtime, but it is not *necessary*, and it
+ * buys atomicity at the price of durability, because a durable append cannot
+ * be synchronous. The invariant is:
  *
  * > **Read, decide and reserve must not interleave with another caller doing
  * > the same, and the reservation must be durable before the operation runs.**
@@ -18,10 +13,9 @@
  * asynchronous and {@link SpendGuard} serialises through a promise chain —
  * the same mechanism the Journal itself uses to keep its hash chain intact.
  *
- * Losing a reservation is not like losing an audit line. The executor's audit
- * sink deliberately does not await the journal, because a dropped record is
- * recovered by reconciling against the exchange. A dropped *reservation* is
- * different: it silently returns budget that may already have been spent, and
+ * Losing a reservation is not like losing an audit line. A dropped audit
+ * record can be recovered by reconciling against the counterparty. A dropped
+ * *reservation* silently returns budget that may already have been spent, and
  * nothing outside the ledger knows it existed.
  */
 import type { Amount } from "./model.js";

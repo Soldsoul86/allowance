@@ -1,18 +1,14 @@
 /**
  * The ledger as a projection of the Event Journal.
  *
- * The journal is the single source of truth and
- * everything else is a derived projection that may be discarded and rebuilt.
- * Until now this package held its ledger in a `Map` and called it a source of
- * truth — a violation of its own constitution, and the reason a reservation
- * could not survive a restart.
- *
- * Here the ledger is what it should always have been: a fold over three kinds
- * of immutable fact.
+ * The journal is the single source of truth, and everything else is a derived
+ * projection that may be discarded and rebuilt. The ledger is therefore a fold
+ * over four kinds of immutable fact:
  *
  *   payment.reserved   this much was committed, by this requester, at this time
  *   payment.settled    this much was actually spent
  *   payment.reversed   it provably did not happen
+ *   payment.extended   the reservation's deadline was pushed out
  *
  * Three consequences fall out for free:
  *
@@ -29,7 +25,7 @@
  * and a lossy `Number` in a money ledger is exactly the bug this package
  * exists to avoid.
  */
-import type { Journal, OrbEvent, SchemaRef } from "@allowance/journal";
+import type { Journal, JournalEvent, SchemaRef } from "@allowance/journal";
 import { orderEvents } from "@allowance/journal";
 
 import type { Amount } from "./model.js";
@@ -50,7 +46,7 @@ import { LedgerProjection, LedgerStoreError } from "./store.js";
  * detection, and a missing decision is reported as missing rather than
  * re-derived, because re-evaluating now would answer a different question.
  */
-export const LEDGER_SCHEMA: SchemaRef = { id: "orb.payment.ledger", version: 4 };
+export const LEDGER_SCHEMA: SchemaRef = { id: "allowance.payment.ledger", version: 4 };
 
 export const RESERVED = "payment.reserved";
 export const SETTLED = "payment.settled";
@@ -106,7 +102,7 @@ function readDecision(value: unknown): Decision | null {
 }
 
 /** The request a ledger event concerns, or `null` if it is not a ledger event. */
-export function requestIdOf(event: OrbEvent): string | null {
+export function requestIdOf(event: JournalEvent): string | null {
   if (event.schema.id !== LEDGER_SCHEMA.id) return null;
   if (!isRecord(event.payload)) return null;
   const id = event.payload["requestId"];
@@ -122,7 +118,7 @@ export function requestIdOf(event: OrbEvent): string | null {
  * corruption, so an orphan is skipped rather than thrown — refusing to open
  * would make a partially-synced device unusable.
  */
-export function applyLedgerEvent(projection: LedgerProjection, event: OrbEvent): boolean {
+export function applyLedgerEvent(projection: LedgerProjection, event: JournalEvent): boolean {
   if (event.schema.id !== LEDGER_SCHEMA.id) return false;
   if (!isRecord(event.payload)) return false;
   const payload = event.payload;
@@ -196,7 +192,7 @@ export class JournalLedgerStore implements LedgerStore {
    * evidence. Holding references costs nothing — the events are immutable and
    * already in memory — and it saves a receipt from rescanning history.
    */
-  readonly #facts = new Map<string, OrbEvent[]>();
+  readonly #facts = new Map<string, JournalEvent[]>();
   #unsubscribe: (() => void) | null = null;
 
   private constructor(journal: Journal) {
@@ -214,7 +210,7 @@ export class JournalLedgerStore implements LedgerStore {
     return store;
   }
 
-  #apply(event: OrbEvent): void {
+  #apply(event: JournalEvent): void {
     if (!applyLedgerEvent(this.#projection, event)) return;
     const requestId = requestIdOf(event);
     if (requestId === null) return;
@@ -230,7 +226,7 @@ export class JournalLedgerStore implements LedgerStore {
    * contents, so a reader can check nothing was edited after the fact without
    * needing the rest of the lane.
    */
-  factsFor(requestId: string): readonly OrbEvent[] {
+  factsFor(requestId: string): readonly JournalEvent[] {
     return this.#facts.get(requestId) ?? [];
   }
 

@@ -1,11 +1,11 @@
 /**
  * Replay — folding the union of all lanes into a derived view.
  *
- * EVENT_MODEL.md §7. Order is derived here, on read, and never stored: that is
- * what keeps devices equal peers: no device is authoritative.
+ * Order is derived here, on read, and never stored. That is what keeps devices
+ * equal peers: no device is authoritative.
  */
 import { compareHlc } from "./hlc.js";
-import type { OrbEvent } from "./types.js";
+import type { JournalEvent } from "./types.js";
 import type { Journal } from "./journal.js";
 
 /**
@@ -14,7 +14,7 @@ import type { Journal } from "./journal.js";
  * The lane tiebreak makes the order identical on every device even when two
  * lanes produce the same HLC.
  */
-export function compareEventOrder(a: OrbEvent, b: OrbEvent): number {
+export function compareEventOrder(a: JournalEvent, b: JournalEvent): number {
   const byHlc = compareHlc(a.hlc, b.hlc);
   if (byHlc !== 0) return byHlc;
   if (a.lane !== b.lane) return a.lane < b.lane ? -1 : 1;
@@ -23,16 +23,16 @@ export function compareEventOrder(a: OrbEvent, b: OrbEvent): number {
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
-export function orderEvents(events: readonly OrbEvent[]): readonly OrbEvent[] {
+export function orderEvents(events: readonly JournalEvent[]): readonly JournalEvent[] {
   return [...events].sort(compareEventOrder);
 }
 
 /** A pure fold from history to derived state. */
-export type Projection<State> = (state: State, event: OrbEvent) => State;
+export type Projection<State> = (state: State, event: JournalEvent) => State;
 
 /** Folds `events` in public order through `project`. */
 export function fold<State>(
-  events: readonly OrbEvent[],
+  events: readonly JournalEvent[],
   initial: State,
   project: Projection<State>,
 ): State {

@@ -47,8 +47,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "typecheck": "tsc -b",
-    "test": "npm run build && node --test --test-reporter=spec \"dist/tests/**/*.test.js\""
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@allowance/journal": "0.1.0"

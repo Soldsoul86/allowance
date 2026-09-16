@@ -9,8 +9,7 @@
  * If only settled spend counted, ten requests fired in the same millisecond
  * would each observe an empty budget and each be allowed, and a daily cap of
  * $100 would release $1,000. That is the payments equivalent of a double
- * spend, and it is the same hazard the executor's `claimExit` exists to
- * prevent: a decision made against state that another in-flight decision has
+ * spend: a decision made against state that another in-flight decision has
  * already changed.
  *
  * So a `PENDING` entry counts exactly as much as a `SETTLED` one. Only a
@@ -27,9 +26,9 @@ import type { Decision } from "./evaluate.js";
  * Where a spend stands.
  *
  * `PENDING` covers everything between authorization and confirmation: signed,
- * broadcast, in a mempool, awaiting confirmations. The rule that an issued
- * action never updates reality until a sensor confirms it is why this state
- * exists at all, rather than jumping straight to settled.
+ * broadcast, in a mempool, awaiting confirmations. An issued action never
+ * counts as reality until something outside confirms it, which is why this
+ * state exists at all rather than jumping straight to settled.
  */
 export type LedgerState = "PENDING" | "SETTLED" | "REVERSED";
 

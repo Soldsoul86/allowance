@@ -1,28 +1,26 @@
 /**
- * The relation a zero-knowledge circuit would enforce — written in plain code.
+ * The relation a zero-knowledge circuit enforces — written in plain code.
  *
- * ## THIS IS STILL NOT ZERO-KNOWLEDGE
+ * ## THIS IS NOT ZERO-KNOWLEDGE
  *
- * `IS_ZERO_KNOWLEDGE` is exported as `false` and a test asserts it. A
- * {@link BudgetProofBundle} **contains its witness in the clear.** It is the
- * statement and the test oracle a real circuit needs, not the proof.
+ * `IS_ZERO_KNOWLEDGE` is exported as `false`. A {@link BudgetProofBundle}
+ * **contains its witness in the clear.** It is the statement and the reference
+ * oracle a real circuit needs, not the proof. `@allowance/circuit` implements
+ * the same relation as a Groth16 circuit.
  *
- * What changed is soundness, not privacy: the completeness gap this file used
- * to report as an unchecked assumption is now constraint **C6**.
+ * ## Why the witness is buckets, not entries
  *
- * ## How the gap closed
+ * If the witness were a set of ledger entries, the prover would choose which
+ * to supply. A Merkle tree proves membership, so omitting an in-window entry
+ * would produce a smaller sum with every proof still checking.
  *
- * The old witness was a set of ledger entries, and the prover chose which to
- * supply. A Merkle tree proves membership, so omitting an in-window entry
- * produced a smaller sum with every proof still checking.
- *
- * The fix was not more cryptography. It was taking the choice away.
+ * The fix is not more cryptography. It is taking the choice away.
  * `BucketCommitment` is a dense array of per-bucket totals, so position `p` in
  * the tree *is* bucket `baseIndex + p` and nothing else can sit there. The
  * verifier computes the covered bucket range **from the public statement
  * alone** and demands exactly those leaves at exactly those positions. A
  * missing bucket is a hole the verifier was already looking at; an invented
- * one lands at the wrong position.
+ * one lands at the wrong position. That is constraint **C6**.
  *
  * ## The statement
  *
@@ -38,9 +36,9 @@
  *   request          the amount and destination
  *   buckets          per-bucket totals — never the individual payments
  *
- * The limit stays private, and so does every individual transaction. What
- * leaks is coarser than before: bucket totals rather than entries, and only
- * for the window in question.
+ * The limit stays private, and so does every individual transaction. What a
+ * verifier of this reference relation sees is bucket totals rather than
+ * entries, and only for the window in question.
  *
  * ## The constraints
  *
@@ -57,18 +55,15 @@
  * the tree is rebuilt with it. C5, C6 and C7 are integer comparisons and
  * nearly free.
  *
- * ## What remains assumed, and why it is a much smaller thing
+ * ## What remains assumed
  *
- * The committer must have totalled honestly. That is *not* the old gap: it is
- * a deterministic function of the ledger, so anyone holding the ledger can
- * rebuild the commitment and compare roots — `commitmentMatchesLedger` does
- * exactly that. A counterparty who cannot see the ledger discharges it the
- * ordinary way instead: the root is signed, published, or anchored before the
- * fact, so it cannot be rewritten afterwards.
- *
- * The difference matters. The old assumption could be broken silently by
- * anyone, with no artefact left behind. This one requires publishing a false
- * root and then being unable to produce a ledger that matches it.
+ * The committer must have totalled honestly. That is a deterministic function
+ * of the ledger, so anyone holding the ledger can rebuild the commitment and
+ * compare roots — `commitmentMatchesLedger` does exactly that. A counterparty
+ * who cannot see the ledger discharges it the ordinary way instead: the root
+ * is signed, published, or anchored before the fact, so it cannot be rewritten
+ * afterwards. Breaking it requires publishing a false root and then being
+ * unable to produce a ledger that matches it.
  */
 import type { SpendRequest } from "./model.js";
 import type { SpendPolicy } from "./policy.js";
@@ -153,10 +148,10 @@ const bad = (id: ConstraintId, name: string, detail: string): ConstraintResult =
 
 const REMAINING_ASSUMPTION =
   "FAITHFUL TOTALLING: the committer is assumed to have summed the ledger " +
-  "correctly into buckets. Unlike the completeness gap this replaced, it is a " +
-  "deterministic function of the ledger — anyone holding it can rebuild the " +
-  "commitment and compare roots (commitmentMatchesLedger), and a counterparty " +
-  "who cannot see it relies on the root being signed or published beforehand.";
+  "correctly into buckets. That is a deterministic function of the ledger — " +
+  "anyone holding it can rebuild the commitment and compare roots " +
+  "(commitmentMatchesLedger), and a counterparty who cannot see it relies on " +
+  "the root being signed or published beforehand.";
 
 /**
  * Evaluates the relation exactly as a circuit would, over revealed values.
@@ -255,7 +250,7 @@ export function checkBudgetRelation(bundle: BudgetProofBundle): RelationResult {
   );
 
   /* C6 — completeness. The leaves are exactly the covered range, in order,
-     no gaps and no repeats. This is the constraint that used to be a hope. */
+     no gaps and no repeats. */
   constraints.push(coverageCheck(witness.buckets, required, statement));
 
   /* C7 — the sum, plus this payment, is inside the private limit. */

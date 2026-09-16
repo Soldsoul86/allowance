@@ -36,14 +36,14 @@ const step = (output, fn) => {
 step("pot_0.ptau", () => snarkjs("powersoftau", "new", "bn128", "17", a("pot_0.ptau"), "-v"));
 step("pot_1.ptau", () =>
   snarkjs("powersoftau", "contribute", a("pot_0.ptau"), a("pot_1.ptau"),
-    "--name=dev", "-v", "-e=orb-development-entropy-not-for-production"));
+    "--name=dev", "-v", "-e=allowance-development-entropy-not-for-production"));
 step("pot_final.ptau", () =>
   snarkjs("powersoftau", "prepare", "phase2", a("pot_1.ptau"), a("pot_final.ptau"), "-v"));
 step("budget_0.zkey", () =>
   snarkjs("groth16", "setup", a("budget.r1cs"), a("pot_final.ptau"), a("budget_0.zkey")));
 step("budget.zkey", () =>
   snarkjs("zkey", "contribute", a("budget_0.zkey"), a("budget.zkey"),
-    "--name=dev", "-v", "-e=orb-development-entropy-not-for-production"));
+    "--name=dev", "-v", "-e=allowance-development-entropy-not-for-production"));
 step("verification_key.json", () =>
   snarkjs("zkey", "export", "verificationkey", a("budget.zkey"), a("verification_key.json")));
 

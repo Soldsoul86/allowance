@@ -2,8 +2,8 @@
  * What an amount actually means.
  *
  * Every amount in this package is a `bigint` in "the asset's smallest
- * indivisible unit", and until now nothing recorded what that unit was. The
- * type system cannot help: `5n` meaning five USDC and `5n` meaning five
+ * indivisible unit", and nothing about the value records what that unit is.
+ * The type system cannot help: `5n` meaning five USDC and `5n` meaning five
  * millionths of a USDC are the same value, and the engine would cheerfully add
  * them together.
  *
@@ -19,11 +19,10 @@
  * parallel envelope nobody declared. Nothing rejects it, because an opaque
  * identifier has no wrong values.
  *
- * Declaring units is what turns those from invisible into refusals. A policy
- * that declares none keeps the previous behaviour, which is why this is opt-in
- * — but a policy that declares them gets both checks, and the declarations are
- * covered by the policy digest, so a receipt proves which denominations were
- * in force.
+ * Declaring units is what turns those from invisible into refusals. It is
+ * opt-in: a policy that declares none is not unit-checked, and a policy that
+ * declares them gets both checks. The declarations are covered by the policy
+ * digest, so a receipt proves which denominations were in force.
  */
 import type { Amount, AssetId } from "./model.js";
 

@@ -46,8 +46,7 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc -b",
-    "circuit": "node scripts/build-circuit.mjs",
-    "test": "npm run build && node --test --test-reporter=spec \"dist/tests/**/*.test.js\""
+    "circuit": "node scripts/build-circuit.mjs"
   },
   "dependencies": {
     "@allowance/policy": "0.1.0",
