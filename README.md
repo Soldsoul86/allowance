@@ -16,6 +16,11 @@ npm install @allowance/policy
 
 ```bash
 npm install && npm run build
+npm run check      # exercises every claim above against the built output
 ```
+
+There is no test suite. [`check.mjs`](check.mjs) is one file that states each
+property the packages claim, runs it, and exits non-zero if it does not hold.
+Read it before believing the READMEs.
 
 Apache-2.0. `@allowance/circuit` pulls a GPL-3.0 proving toolchain — see [`NOTICE`](NOTICE).

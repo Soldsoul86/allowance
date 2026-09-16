@@ -39,4 +39,7 @@ Logical Clocks. Persisting an order would reintroduce an authority.
 Stores are ports: `MemoryJournalStore` and `FileJournalStore` ship; bring your
 own for anything else.
 
+Ships without a test suite. `npm run check` at the repository root exercises
+the claims above against the built output.
+
 Apache-2.0.

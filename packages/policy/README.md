@@ -69,4 +69,7 @@ decides, it does not move money, it holds no keys, and it cannot interrupt a
 call already in flight. Approvals are counted, not authenticated; your shell
 must verify them first.
 
+Ships without a test suite. `npm run check` at the repository root exercises
+the claims above against the built output.
+
 Apache-2.0. One dependency (`@allowance/journal`), which has none of its own.
