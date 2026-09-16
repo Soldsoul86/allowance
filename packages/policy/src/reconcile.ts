@@ -7,7 +7,7 @@
  * and on its own it is not enough — a system that only accumulates
  * unresolvable reservations is honestly stuck rather than safe.
  *
- * Constitution Art. XI §42 says how it ends: *the runtime loop closes only
+ * The governing rule says how it ends: *the loop closes only
  * when a Sensor confirms that reality occurred as expected.* {@link
  * SpendObserver} is that sensor. It is the one component here that looks at
  * the outside world — a vendor's usage API, a billing export, a chain, a

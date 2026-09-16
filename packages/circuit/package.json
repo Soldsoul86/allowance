@@ -40,9 +40,6 @@
     "dist/src",
     "circuits",
     "README.md",
-    "DESIGN.md",
-    "API.md",
-    "TESTS.md",
     "LICENSE",
     "NOTICE"
   ],

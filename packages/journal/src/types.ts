@@ -3,7 +3,7 @@
  *
  * EVENT_MODEL.md §3 and `contracts/Event.md`. The journal treats `payload` as
  * opaque; meaning is assigned by projections. Nothing here may be mutated:
- * Constitution Art. I §2, "history is never mutated".
+ * History is never mutated: events are never edited, reordered or deleted.
  */
 import type { Hlc } from "./hlc.js";
 
@@ -16,7 +16,7 @@ export interface SchemaRef {
   readonly version: number;
 }
 
-/** Per-lane hash chaining, giving tamper-evidence (Constitution Art. I §5). */
+/** Per-lane hash chaining, giving tamper-evidence. */
 export interface Integrity {
   /** Hash of the preceding event in this lane; `null` for the lane's first event. */
   readonly previous: string | null;

@@ -20,13 +20,9 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "node scripts/clean.mjs",
     "build": "tsc -b",
-    "typecheck": "tsc -b && node scripts/typecheck-independently.mjs",
-    "lint": "node scripts/lint.mjs",
-    "test": "npm run build && node --test --test-reporter=spec \"packages/*/dist/tests/**/*.test.js\"",
-    "verify": "npm run lint && npm run typecheck && npm test",
-    "demo": "node examples/agent-budget.mjs"
+    "test": "npm run build && node --test \"packages/*/dist/tests/**/*.test.js\"",
+    "prepublishOnly": "npm run build && npm test"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

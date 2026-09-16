@@ -4,8 +4,8 @@
  * An approval says *"I permit this."* An attestation says *"I observed this."*
  * The difference matters: an approver exercises authority, an attester reports
  * a fact. A shipment was dispatched, customs cleared it, the goods arrived,
- * a counterparty was verified. Those are observations, and Constitution
- * Art. XI §43 is explicit that an observation owns confidence, not truth.
+ * a counterparty was verified. Those are observations, and an observation owns
+ * confidence, not truth.
  *
  * Two rules keep this safe to build on:
  *

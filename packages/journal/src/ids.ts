@@ -1,7 +1,7 @@
 /**
  * Event identifiers.
  *
- * Constitution Art. I: every event carries a globally unique identity that is
+ * Every event carries a globally unique identity that is
  * never reused. Identifiers are ULID-class — lexicographically sortable by
  * creation time, with cryptographic randomness in the low bits.
  */

@@ -2,7 +2,7 @@
  * The one encoding everything hashes and signs over.
  *
  * Three modules needed "canonical bytes for this object" and two of them had
- * grown their own copy. Art. IX §33 — never duplicate a source of truth —
+ * grown their own copy. Never duplicating a source of truth
  * applies to an encoding as much as to data: two encoders that agree today
  * will disagree after one of them is edited, and then a signature made by one
  * fails under the other for no visible reason.

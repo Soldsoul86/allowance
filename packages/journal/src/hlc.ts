@@ -1,7 +1,7 @@
 /**
  * Hybrid Logical Clocks.
  *
- * EVENT_MODEL.md §5 and Constitution Art. IV §17: public ordering is `(hlc, lane)`,
+ * Global order is derived on read, never stored: public ordering is `(hlc, lane)`,
  * derived on read, never stored. An HLC keeps a monotonic logical counter bounded
  * close to physical time, so causal order survives unsynchronised device clocks.
  */

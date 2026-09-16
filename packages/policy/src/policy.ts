@@ -5,7 +5,7 @@
  * serialized, hashed, journalled and replayed. Rules are a discriminated union
  * rather than an interface with implementations, so adding a rule kind is an
  * addition to a type — the compiler then names every place that must handle it
- * (Constitution Art. X §37: the kernel evolves through addition).
+ * (evolve through addition, never mutation).
  *
  * Every rule carries a scope. A rule with no scope applies to everyone, which
  * is the only sane default for a limit: forgetting to scope a rule must mean

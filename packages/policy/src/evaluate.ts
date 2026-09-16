@@ -4,7 +4,7 @@
  * Pure: no I/O, no clock, no randomness, no mutation of its inputs. The same
  * request, policy and ledger always produce a byte-identical decision, which
  * is what lets a decision be journalled once and re-derived forever
- * (Constitution Art. I §4, Art. II §9).
+ * (everything replays from events; understanding is always recomputable).
  *
  * Three properties are load-bearing, and each exists because the alternative
  * fails in a way that costs money:
@@ -12,7 +12,7 @@
  * - **Deny by default.** No policy, no matching rule, an unrecognised account:
  *   all deny. An authorization system whose failure mode is "allow" is not an
  *   authorization system.
- * - **Every rule is evaluated, not just the first to fail.** Art. II §10
+ * - **Every rule is evaluated, not just the first to fail.** Every decision
  *   requires that a decision be explainable; a decision that names one
  *   tripped limit while hiding the four it passed cannot be audited, and
  *   cannot tell an operator how close the others came.

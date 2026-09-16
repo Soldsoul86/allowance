@@ -3,7 +3,7 @@
  *
  * The engine is pure and takes its instant from the request. The shell has to
  * get that instant from somewhere, and "somewhere" is injected rather than
- * imported so a test can drive time instead of waiting for it (Art. IX §35:
+ * imported so a test can drive time instead of waiting for it (
  * every module independently testable).
  */
 export interface Clock {

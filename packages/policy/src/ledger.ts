@@ -27,9 +27,9 @@ import type { Decision } from "./evaluate.js";
  * Where a spend stands.
  *
  * `PENDING` covers everything between authorization and confirmation: signed,
- * broadcast, in a mempool, awaiting confirmations. Constitution Art. XI §42 —
- * an issued action never updates reality until a sensor confirms it — is why
- * this state exists at all rather than jumping straight to settled.
+ * broadcast, in a mempool, awaiting confirmations. The rule that an issued
+ * action never updates reality until a sensor confirms it is why this state
+ * exists at all, rather than jumping straight to settled.
  */
 export type LedgerState = "PENDING" | "SETTLED" | "REVERSED";
 
@@ -87,7 +87,7 @@ export interface LedgerEntry {
  * append. Writing a `payment.expired` event would be journalling the passage
  * of time, which history already knows.
  *
- * More importantly, expiry does **not** release the budget. Art. XI §42 does
+ * More importantly, expiry does **not** release the budget. A deadline does
  * not stop applying because a timer fired: a reservation that outlived its TTL
  * is the indeterminate case, not the didn't-happen case. If the provider
  * charged before the client died, releasing here hands back budget for money

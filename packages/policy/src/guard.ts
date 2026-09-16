@@ -18,8 +18,8 @@
  * the hash chain intact. Same guarantee as `claimExit`, reached with a lock
  * rather than with synchrony, and durable as well.
  *
- * **What happens when the operation fails.** Constitution Art. XI §42: Orb
- * never assumes an Action changed reality. A thrown error does not tell you
+ * **What happens when the operation fails.** Never assume an action changed
+ * reality. A thrown error does not tell you
  * whether the money moved — a connection reset before the request left is
  * indistinguishable, from here, from a response lost after the vendor already
  * charged. So the default is to *hold*: the reservation stays open, the
@@ -227,7 +227,7 @@ export interface GuardOptions {
   /**
    * Called for every decision, allowed or refused, before the operation runs.
    *
-   * This is the journal seam. Art. VII §29: there are no silent actions — and
+   * This is the journal seam. There are no silent actions — and
    * a refusal is as much a part of the record as a payment.
    */
   readonly onDecision?: (decision: Decision, request: SpendRequest) => void;
@@ -487,7 +487,7 @@ export class SpendGuard {
 
   /**
    * Closes the loop on open reservations by asking a sensor what really
-   * happened (Art. XI §42). See `reconcile.ts` for why an unknown stays open.
+   * happened. See `reconcile.ts` for why an unknown stays open.
    */
   reconcile(observer: SpendObserver, ageMs: number): Promise<ReconciliationReport> {
     return reconcile({

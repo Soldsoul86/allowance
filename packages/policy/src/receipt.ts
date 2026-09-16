@@ -45,7 +45,7 @@ import { assessQuote, settlementAgainstQuote } from "./quote.js";
 /**
  * Current receipt shape.
  *
- * Version 2 adds the quote a payment was made against. Art. X §37 — the kernel
+ * Version 2 adds the quote a payment was made against. The format
  * evolves through addition, never mutation — so a v1 receipt remains valid
  * forever and simply has no quote to check. The verifier accepts both and says
  * which checks it could run.

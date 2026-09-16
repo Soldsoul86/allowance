@@ -1,45 +1,38 @@
-# `@allowance/journal`
+# @allowance/journal
 
-The Event Journal — Orb's single source of truth.
+An append-only, hash-chained, HLC-ordered event journal. Zero dependencies.
 
-Append-only, hash-chained, HLC-ordered history. Everything else in the runtime
-is a projection of what passes through here, and any projection can be deleted
-and rebuilt by replaying it.
-
-This is the first executable component of Orb (ROADMAP Phase 4), and the
-substrate the Hyperliquid trade executor records its audit trail on.
-
-## Quick start
-
-```ts
-import { Journal, FileJournalStore, replay } from "@allowance/journal";
-
-const store = await FileJournalStore.open(".orb-local/journal");
-const journal = await Journal.open({ lane: "mac", device: "mac-01", store });
-
-await journal.appendOne({
-  type: "note",
-  schema: { id: "example.note", version: 1 },
-  payload: { text: "hello" },
-});
-
-// Any derived view is a fold over history.
-const count = await replay(journal, 0, (n) => n + 1);
+```bash
+npm install @allowance/journal
 ```
 
-## What it guarantees
+```ts
+import { Journal, MemoryJournalStore } from "@allowance/journal";
 
-| Guarantee | Where |
-| --- | --- |
-| Appends only; history is never mutated | `journal.ts` |
-| One writer per lane; foreign lanes are replicated read-only | `journal.ts` |
-| Tamper-evidence through a per-lane hash chain | `integrity.ts` |
-| Causal ordering across unsynchronised clocks | `hlc.ts` |
-| Public order derived on read, never stored | `replay.ts` |
-| Durability across process and machine restart | `file-store.ts` |
+const journal = await Journal.open({
+  store: new MemoryJournalStore(),
+  device: "laptop",
+  lane: "laptop",
+});
 
-## Documents
+await journal.append({ schema: { name: "note", version: 1 }, payload: { text: "hello" } });
+const events = await journal.readAll();
+```
 
-- [`DESIGN.md`](DESIGN.md) — why it is built this way.
-- [`API.md`](API.md) — the public surface.
-- [`TESTS.md`](TESTS.md) — what is covered and what is not.
+**History is never mutated.** Events are never edited, reordered or deleted.
+Everything else is a projection of this and may be discarded and rebuilt.
+
+**Tamper-evident.** Each lane is hash-chained, so corruption or rewriting is
+detectable rather than silent.
+
+**No authoritative device.** Each device writes only its own lane and
+replicates foreign ones; merge is a set union of immutable lanes and never
+rewrites history.
+
+**Global order is derived on read, never stored** — computed from Hybrid
+Logical Clocks. Persisting an order would reintroduce an authority.
+
+Stores are ports: `MemoryJournalStore` and `FileJournalStore` ship; bring your
+own for anything else.
+
+Apache-2.0.

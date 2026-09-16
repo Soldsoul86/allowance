@@ -6,7 +6,7 @@
  * so a resolved append survives process and machine death.
  *
  * A torn trailing line — the signature of a crash mid-write — is discarded on
- * read rather than repaired, because Art. I §2 forbids mutating history and a
+ * read rather than repaired, because history is never mutated and a
  * partial line was never a complete event.
  */
 import { open, mkdir, readFile, readdir } from "node:fs/promises";

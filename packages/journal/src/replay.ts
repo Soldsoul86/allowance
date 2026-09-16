@@ -2,7 +2,7 @@
  * Replay — folding the union of all lanes into a derived view.
  *
  * EVENT_MODEL.md §7. Order is derived here, on read, and never stored: that is
- * what keeps devices equal peers (Constitution Art. IV §17).
+ * what keeps devices equal peers: no device is authoritative.
  */
 import { compareHlc } from "./hlc.js";
 import type { OrbEvent } from "./types.js";

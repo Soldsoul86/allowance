@@ -1,7 +1,7 @@
 /**
  * Tamper-evidence for the journal.
  *
- * Constitution Art. I §5: lanes are hash-chained so that any corruption or
+ * Lanes are hash-chained so that any corruption or
  * rewriting is detectable. The hash covers every field of the event except the
  * hash itself, and commits to the predecessor's hash.
  */

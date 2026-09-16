@@ -10,7 +10,7 @@
  * 2. **Time is supplied, never read.** Nothing here calls a clock. The instant
  *    a request is evaluated at is carried on the request, so the same inputs
  *    always produce the same decision — which is what makes a decision
- *    replayable (Constitution Art. I §4).
+ *    replayable.
  */
 
 import type { Attestation } from "./attestation.js";

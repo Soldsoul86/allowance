@@ -1,7 +1,7 @@
 /**
  * The ledger as a projection of the Event Journal.
  *
- * Constitution Art. I §3: the journal is the single source of truth and
+ * The journal is the single source of truth and
  * everything else is a derived projection that may be discarded and rebuilt.
  * Until now this package held its ledger in a `Map` and called it a source of
  * truth — a violation of its own constitution, and the reason a reservation
@@ -17,10 +17,10 @@
  * Three consequences fall out for free:
  *
  * - **A restart resumes.** `open` replays the journal and rebuilds the budget
- *   exactly, because the fold is deterministic (Art. II §9).
+ *   exactly, because the fold is deterministic.
  * - **Devices share a budget.** Replicated lanes carry the same facts, and
  *   `orderEvents` puts them in HLC order, so two devices spending from one
- *   envelope converge instead of double-counting (Art. IV §18).
+ *   envelope converge instead of double-counting (merge is a set union).
  * - **Reconciliation is a fold, not a special case.** An open reservation is
  *   simply a `reserved` with no matching `settled` or `reversed`.
  *
@@ -43,7 +43,7 @@ import { LedgerProjection, LedgerStoreError } from "./store.js";
  * Version 4 adds `expiresAt` to `payment.reserved` and the `payment.extended`
  * event; version 3 added `decision`; version 2 added `intent`.
  *
- * Art. X §37 — the kernel evolves through addition. Older events replay with
+ * Formats evolve through addition, never mutation. Older events replay with
  * the newer fields absent and read as "unknown" (`intent: ""`,
  * `decision: null`) rather than failing to load. Unknown is always treated as
  * the cautious case: an uncomparable fingerprint falls back to plain duplicate
@@ -255,7 +255,7 @@ export class JournalLedgerStore implements LedgerStore {
 
   async append(entry: LedgerEntry): Promise<void> {
     // Checked before writing, because an append is permanent. A duplicate that
-    // reached history could never be taken back (Art. I §2).
+    // reached history could never be taken back.
     if (this.#projection.find(entry.requestId) !== undefined) {
       throw new LedgerStoreError(`duplicate reservation for ${entry.requestId}`);
     }

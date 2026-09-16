@@ -39,9 +39,6 @@
   "files": [
     "dist/src",
     "README.md",
-    "DESIGN.md",
-    "API.md",
-    "TESTS.md",
     "LICENSE",
     "NOTICE"
   ],

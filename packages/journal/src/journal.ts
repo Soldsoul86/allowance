@@ -1,9 +1,9 @@
 /**
- * The Event Journal — Orb's single source of truth.
+ * The Event Journal — the single source of truth.
  *
- * Constitution Art. I: appends only, never mutates, hash-chains for
- * tamper-evidence. Art. IV §15: a device writes only its own lane and merely
- * replicates foreign lanes. Everything else in Orb is a projection of this.
+ * Appends only, never mutates, hash-chains for tamper-evidence. A device
+ * writes only its own lane and merely replicates foreign lanes. Everything
+ * else is a projection of this, and may be discarded and rebuilt.
  */
 import { HybridLogicalClock, type Hlc, type PhysicalClock } from "./hlc.js";
 import { hashEvent, verifyLane } from "./integrity.js";
@@ -139,7 +139,7 @@ export class Journal {
   }
 
   /**
-   * Adopts events from a foreign lane (Art. IV §18: merge is set union of
+   * Adopts events from a foreign lane (merge is a set union of
    * immutable lanes). Rejects anything claiming to be this device's lane.
    */
   async replicate(lane: LaneId, events: readonly OrbEvent[]): Promise<void> {

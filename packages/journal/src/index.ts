@@ -1,7 +1,7 @@
 /**
  * @allowance/journal — the Event Journal.
  *
- * Orb's single source of truth: append-only, hash-chained, HLC-ordered.
+ * A single source of truth: append-only, hash-chained, HLC-ordered.
  * Everything else in the runtime is a projection of what passes through here.
  */
 export { HybridLogicalClock, HLC_ZERO, compareHlc, encodeHlc, decodeHlc } from "./hlc.js";
