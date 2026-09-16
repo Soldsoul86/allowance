@@ -34,6 +34,19 @@ npm run check      # exercises every claim above against the built output
 [`examples/`](examples) holds ten situations with the exact policy that handles
 each; `npm run examples` runs them all.
 
+**Releasing.** Bump the version of each package that changed, and the pin in
+any sibling that depends on it, then push a tag:
+
+```bash
+git tag v0.1.1 && git push origin v0.1.1
+```
+
+The [release workflow](.github/workflows/release.yml) runs the check and the
+examples on that commit, publishes every package whose version is not on npm
+yet in dependency order, and writes a GitHub release. It signs in to npm with
+a short-lived token from GitHub, so there is no npm token anywhere.
+`node release.mjs --dry-run` shows what a tag would publish.
+
 There is no test suite. [`check.mjs`](check.mjs) is one file that states each
 property the packages claim, runs it, and exits non-zero if it does not hold.
 Read it before believing the READMEs.

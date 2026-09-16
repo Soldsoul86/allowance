@@ -1,0 +1,61 @@
+# Push a tag that starts with "v" and this publishes every package whose
+# version is not on npm yet, in dependency order, then writes a GitHub
+# release. Nothing is published unless the check script and every example
+# pass on the tagged commit.
+#
+# Publishing uses npm trusted publishing: the workflow proves its identity to
+# npm with a short-lived OpenID Connect token, so there is no npm token to
+# store or leak, and every package gets a provenance attestation linking it
+# to this exact commit and workflow run. Each package must list this
+# repository and workflow as a trusted publisher once, in its settings on
+# npmjs.com.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # to create the GitHub release
+  id-token: write   # to mint the OpenID Connect token npm verifies
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # release notes are generated from the commits since the previous tag
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm 11.5.1 or later; Node 22 ships npm 10.
+      - run: npm install -g npm@latest
+
+      - run: npm ci
+
+      # The same evidence a stranger gets, required before anything ships.
+      - run: npm run check
+      - run: npm run examples
+
+      - id: publish
+        run: node release.mjs
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISHED: ${{ steps.publish.outputs.published }}
+        run: |
+          if [ -n "$PUBLISHED" ]; then
+            notes="Published to npm: $(echo "$PUBLISHED" | sed 's/ /, /g')"
+          else
+            notes="No new package versions; every package was already on npm."
+          fi
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "$notes" --generate-notes
