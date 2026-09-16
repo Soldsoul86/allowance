@@ -147,7 +147,7 @@ export type {
   BudgetStatement,
   CommitmentStatement,
   BudgetWitness,
-  BudgetProofBundle,
+  BudgetWitnessBundle,
   WitnessBucket,
   ConstraintId,
   ConstraintResult,

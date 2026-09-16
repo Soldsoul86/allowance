@@ -3,7 +3,7 @@
  *
  * ## THIS IS NOT ZERO-KNOWLEDGE
  *
- * `IS_ZERO_KNOWLEDGE` is exported as `false`. A {@link BudgetProofBundle}
+ * `IS_ZERO_KNOWLEDGE` is exported as `false`. A {@link BudgetWitnessBundle}
  * **contains its witness in the clear.** It is the statement and the reference
  * oracle a real circuit needs, not the proof. `@allowance/circuit` implements
  * the same relation as a Groth16 circuit.
@@ -116,7 +116,7 @@ export interface BudgetWitness {
  * A bundle, not a proof: a proof is the thing you hand over *instead of* the
  * witness, and this is not that.
  */
-export interface BudgetProofBundle {
+export interface BudgetWitnessBundle {
   readonly statement: BudgetStatement;
   readonly witness: BudgetWitness;
 }
@@ -161,7 +161,7 @@ const REMAINING_ASSUMPTION =
  * — otherwise the two disagree on malformed input, which is precisely where a
  * circuit gets attacked.
  */
-export function checkBudgetRelation(bundle: BudgetProofBundle): RelationResult {
+export function checkBudgetRelation(bundle: BudgetWitnessBundle): RelationResult {
   const { statement, witness } = bundle;
   const constraints: ConstraintResult[] = [];
 
@@ -333,7 +333,7 @@ export function buildBudgetBundle(input: {
   readonly ruleId: string;
   readonly commitment: BucketCommitment;
   readonly windowMs: number;
-}): BudgetProofBundle | null {
+}): BudgetWitnessBundle | null {
   const required = coveringBuckets(
     input.request.requestedAt,
     input.windowMs,
