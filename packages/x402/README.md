@@ -42,8 +42,12 @@ try {
 authorization, with a fresh nonce, every time it sees a 402. A response lost
 after the facilitator settled looks, from the client, exactly like a response
 lost before the request left, and a client that answers both by signing again
-has paid twice for one resource. The maintainers have it on file as
+has paid twice for one resource. Whether that is intended, and whether any
+client reuses a payload rather than minting a new one, is an open question
+raised by a contributor in
 [x402-foundation/x402#3438](https://github.com/x402-foundation/x402/issues/3438).
+No maintainer has answered it at the time of writing, so treat this package as
+one answer to that question rather than as a fix for an acknowledged defect.
 `examples/12-x402-retry-pays-once.mjs` reproduces it against the real
 reference wrapper, then shows the same client paying once behind the guard.
 
