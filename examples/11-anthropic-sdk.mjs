@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { guardMessages, SpendRefusedError } from "@soldsoul86/anthropic";
+import { guardMessages, SpendRefusedError } from "@spendcap/anthropic";
 import { makeGuard, title, agent, ANY, DAY } from "./lib.mjs";
 title(11, "The Anthropic SDK behind the guard: one import changes, every call is decided, reserved and settled");
 

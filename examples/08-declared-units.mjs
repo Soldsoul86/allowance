@@ -1,4 +1,4 @@
-import { validatePolicy, PolicyConfigError } from "@soldsoul86/policy";
+import { validatePolicy, PolicyConfigError } from "@spendcap/policy";
 import { makeGuard, draft, spend, title, agent, ANY, DAY } from "./lib.mjs";
 title(8, "Declared units catch a scale mistake and a typo'd asset; an undeclared asset in a rule fails at load");
 const policy = { account: "acct", version: 1,

@@ -29,7 +29,7 @@
  * reports exactly which checks it could and could not perform — a verifier
  * that quietly downgraded would be worse than one that refuses.
  */
-import { verifyEvent, type JournalEvent } from "@soldsoul86/journal";
+import { verifyEvent, type JournalEvent } from "@spendcap/journal";
 
 import { canonicalText, digestOf } from "./wire.js";
 

@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Journal, FileJournalStore } from "@soldsoul86/journal";
-import { JournalLedgerStore, buildReceipt, verifyReceipt } from "@soldsoul86/policy";
+import { Journal, FileJournalStore } from "@spendcap/journal";
+import { JournalLedgerStore, buildReceipt, verifyReceipt } from "@spendcap/policy";
 import { makeGuard, draft, spend, title, agent, ANY, DAY, T0 } from "./lib.mjs";
 title(10, "Durable ledger on disk: a restart resumes the budget, an ambiguous failure is reconciled, a receipt verifies");
 const policy = { account: "acct", version: 1, rules: [

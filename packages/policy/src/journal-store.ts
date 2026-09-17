@@ -25,8 +25,8 @@
  * and a lossy `Number` in a money ledger is exactly the bug this package
  * exists to avoid.
  */
-import type { Journal, JournalEvent, SchemaRef } from "@soldsoul86/journal";
-import { orderEvents } from "@soldsoul86/journal";
+import type { Journal, JournalEvent, SchemaRef } from "@spendcap/journal";
+import { orderEvents } from "@spendcap/journal";
 
 import type { Amount } from "./model.js";
 import type { Requester } from "./model.js";

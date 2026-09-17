@@ -11,7 +11,7 @@
  * about right for a page. The reply is charged at `max_tokens`, its ceiling.
  */
 import type { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages";
-import type { Amount } from "@soldsoul86/policy";
+import type { Amount } from "@spendcap/policy";
 
 const CHARS_PER_TOKEN = 4;
 const MEDIA_BLOCK_CHARS = 1_600 * CHARS_PER_TOKEN;

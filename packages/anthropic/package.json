@@ -1,5 +1,5 @@
 {
-  "name": "@soldsoul86/anthropic",
+  "name": "@spendcap/anthropic",
   "version": "0.1.0",
   "description": "The Anthropic SDK behind a spend guard: policy decides, budget reserves, ledger settles at real usage.",
   "keywords": [
@@ -48,7 +48,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@soldsoul86/policy": "0.1.0"
+    "@spendcap/policy": "0.1.0"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.50.0"

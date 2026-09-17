@@ -5,7 +5,7 @@
  *
  * `IS_ZERO_KNOWLEDGE` is exported as `false`. A {@link BudgetWitnessBundle}
  * **contains its witness in the clear.** It is the statement and the reference
- * oracle a real circuit needs, not the proof. `@soldsoul86/circuit` implements
+ * oracle a real circuit needs, not the proof. `@spendcap/circuit` implements
  * the same relation as a Groth16 circuit.
  *
  * ## Why the witness is buckets, not entries

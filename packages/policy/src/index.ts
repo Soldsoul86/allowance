@@ -1,5 +1,5 @@
 /**
- * @soldsoul86/policy — programmable spend authority.
+ * @spendcap/policy — programmable spend authority.
  *
  * A payment may be requested by anyone: a person, a schedule, an autonomous
  * agent. **Spend authority belongs to the policy.** Nothing a requester sends

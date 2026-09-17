@@ -37,8 +37,8 @@ import type {
   PaymentResponseContext,
 } from "@x402/core/client";
 import type { PaymentPayload, PaymentRequired, PaymentRequirements } from "@x402/core/types";
-import type { Authorization, Decision, LedgerEntry, Requester, SpendGuard, SpendRequest } from "@soldsoul86/policy";
-import { digestOf, explain, readAmount } from "@soldsoul86/policy";
+import type { Authorization, Decision, LedgerEntry, Requester, SpendGuard, SpendRequest } from "@spendcap/policy";
+import { digestOf, explain, readAmount } from "@spendcap/policy";
 
 export interface GuardX402Options {
   readonly guard: SpendGuard;

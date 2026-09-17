@@ -18,8 +18,8 @@ import type {
   MessageTokensCount,
   Usage,
 } from "@anthropic-ai/sdk/resources/messages";
-import type { Amount, Decision, LedgerEntry, Requester, SpendGuard, SpendRequest } from "@soldsoul86/policy";
-import { explain } from "@soldsoul86/policy";
+import type { Amount, Decision, LedgerEntry, Requester, SpendGuard, SpendRequest } from "@spendcap/policy";
+import { explain } from "@spendcap/policy";
 
 import { estimateTokens } from "./estimate.js";
 

@@ -1,17 +1,17 @@
-# @soldsoul86/anthropic
+# @spendcap/anthropic
 
 The Anthropic SDK behind a spend guard. One import changes; every call is then
 decided by your policy before it is sent, reserved against your budget, and
 settled at the token count the API actually reports.
 
 ```bash
-npm install @soldsoul86/anthropic @soldsoul86/policy @anthropic-ai/sdk
+npm install @spendcap/anthropic @spendcap/policy @anthropic-ai/sdk
 ```
 
 ```ts
 import Anthropic from "@anthropic-ai/sdk";
-import { SpendGuard, MemoryLedgerStore, singlePolicy } from "@soldsoul86/policy";
-import { guardMessages, SpendRefusedError } from "@soldsoul86/anthropic";
+import { SpendGuard, MemoryLedgerStore, singlePolicy } from "@spendcap/policy";
+import { guardMessages, SpendRefusedError } from "@spendcap/anthropic";
 
 const policy = {
   account: "acct:research", version: 1,

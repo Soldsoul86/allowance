@@ -13,18 +13,18 @@ re-run the decision themselves and check it comes out the same.
 > A payment may be requested by anyone. **Spend authority belongs to the policy.**
 
 Programmable spend authority for AI agents, published on npm under the
-`@soldsoul86` scope.
+`@spendcap` scope.
 
 | Package | |
 | --- | --- |
-| [`@soldsoul86/policy`](packages/policy) | Rules, guard, ledger, receipts, quotes, signing, x402 transport |
-| [`@soldsoul86/journal`](packages/journal) | Append-only, hash-chained history. Zero dependencies |
-| [`@soldsoul86/circuit`](packages/circuit) | Prove a spend stayed inside a budget without revealing the budget |
-| [`@soldsoul86/anthropic`](packages/anthropic) | The Anthropic SDK behind the guard: swap one import, every call is decided, reserved and settled |
-| [`@soldsoul86/x402`](packages/x402) | x402 behind the guard: the policy decides before anything is signed, and a retry pays once |
+| [`@spendcap/policy`](packages/policy) | Rules, guard, ledger, receipts, quotes, signing, x402 transport |
+| [`@spendcap/journal`](packages/journal) | Append-only, hash-chained history. Zero dependencies |
+| [`@spendcap/circuit`](packages/circuit) | Prove a spend stayed inside a budget without revealing the budget |
+| [`@spendcap/anthropic`](packages/anthropic) | The Anthropic SDK behind the guard: swap one import, every call is decided, reserved and settled |
+| [`@spendcap/x402`](packages/x402) | x402 behind the guard: the policy decides before anything is signed, and a retry pays once |
 
 ```bash
-npm install @soldsoul86/policy
+npm install @spendcap/policy
 ```
 
 ```bash
@@ -52,4 +52,4 @@ There is no test suite. [`check.mjs`](check.mjs) is one file that states each
 property the packages claim, runs it, and exits non-zero if it does not hold.
 Read it before believing the READMEs.
 
-Apache-2.0. `@soldsoul86/circuit` pulls a GPL-3.0 proving toolchain — see [`NOTICE`](NOTICE).
+Apache-2.0. `@spendcap/circuit` pulls a GPL-3.0 proving toolchain — see [`NOTICE`](NOTICE).

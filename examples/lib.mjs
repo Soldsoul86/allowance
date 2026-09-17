@@ -1,7 +1,7 @@
 // Shared helpers for the examples. Each example is a standalone script:
 //   node examples/01-per-agent-token-budgets.mjs
 // or all of them in order with `npm run examples`.
-import { SpendGuard, MemoryLedgerStore, ManualClock, singlePolicy, summarize } from "@soldsoul86/policy";
+import { SpendGuard, MemoryLedgerStore, ManualClock, singlePolicy, summarize } from "@spendcap/policy";
 
 export const T0 = Date.UTC(2026, 8, 16, 9, 0, 0); // 2026-09-16 09:00 UTC
 export const MIN = 60_000;

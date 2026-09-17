@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
 import { encodePaymentRequiredHeader, encodePaymentResponseHeader, decodePaymentSignatureHeader } from "@x402/core/http";
-import { guardX402 } from "@soldsoul86/x402";
+import { guardX402 } from "@spendcap/x402";
 import { makeGuard, title, agent, ANY, DAY } from "./lib.mjs";
 title(12, "x402: a retry after a lost response pays once, not twice (x402-foundation/x402#3438)");
 

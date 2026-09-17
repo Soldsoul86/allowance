@@ -1,5 +1,5 @@
 /**
- * @soldsoul86/x402 — x402 behind a spend guard.
+ * @spendcap/x402 — x402 behind a spend guard.
  *
  * The policy decides before anything is signed, the budget is reserved before
  * the authorization exists, and a retry of the same purchase presents the

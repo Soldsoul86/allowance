@@ -1,5 +1,5 @@
 /**
- * @soldsoul86/journal — an append-only, hash-chained, HLC-ordered event journal.
+ * @spendcap/journal — an append-only, hash-chained, HLC-ordered event journal.
  *
  * A single source of truth. Everything else is a projection of what passes
  * through here, and may be discarded and rebuilt.

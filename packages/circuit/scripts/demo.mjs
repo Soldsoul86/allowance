@@ -18,7 +18,7 @@ import {
   publicInputsFor,
   shutdown,
   verifyBudgetProof,
-} from "@soldsoul86/circuit";
+} from "@spendcap/circuit";
 
 const say = (s = "") => process.stdout.write(`${s}\n`);
 

@@ -1,10 +1,10 @@
-# @soldsoul86/circuit
+# @spendcap/circuit
 
 A Groth16 circuit proving a payment stayed inside a budget **without revealing
 the budget**, the amount, or the ledger.
 
 ```bash
-npm install @soldsoul86/circuit
+npm install @spendcap/circuit
 ```
 
 **The published package contains the circuit source, not proving keys.** Run

@@ -12,7 +12,7 @@ import { generateKeyPairSync } from "node:crypto";
 import {
   Journal, MemoryJournalStore, JournalIntegrityError,
   canonicalJson, verifyEvent, verifyLane,
-} from "@soldsoul86/journal";
+} from "@spendcap/journal";
 import {
   SpendGuard, MemoryLedgerStore, JournalLedgerStore, ManualClock, singlePolicy,
   evaluate, validatePolicy, PolicyConfigError, policyDigest, canonicalText,
@@ -20,7 +20,7 @@ import {
   LedgerCommitment, verifyInclusion, emptyRoot,
   BucketCommitment, coveringBuckets, buildBudgetBundle, checkBudgetRelation, IS_ZERO_KNOWLEDGE,
   ed25519Signer, MemoryKeyDirectory, signQuote, verifySignedQuote,
-} from "@soldsoul86/policy";
+} from "@spendcap/policy";
 
 let failures = 0;
 const check = (claim, ok, detail = "") => {
@@ -34,7 +34,7 @@ const NOW = 1_758_000_000_000;
 const DAY = 86_400_000;
 
 /* ---------------------------------------------------------------- journal */
-section("@soldsoul86/journal");
+section("@spendcap/journal");
 {
   // RFC 8785 section 3.2.3, the RFC's own worked example: its input, and its
   // expected output byte for byte.
@@ -85,7 +85,7 @@ section("@soldsoul86/journal");
 }
 
 /* ----------------------------------------------------------------- policy */
-section("@soldsoul86/policy: the engine");
+section("@spendcap/policy: the engine");
 const policy = {
   account: "acct:agent", version: 1,
   rules: [
@@ -125,7 +125,7 @@ const request = { ...draft("req-0", 1_000n), requestedAt: NOW, approvals: [], at
     evaluate({ ...request, requestId: "p", amount: 25_000n }, policy, ledger).outcome === "ALLOW");
 }
 
-section("@soldsoul86/policy: the guard");
+section("@spendcap/policy: the guard");
 {
   const clock = new ManualClock(NOW);
   const guard = new SpendGuard({ store: new MemoryLedgerStore(), policyFor: singlePolicy(policy), clock });
@@ -151,7 +151,7 @@ section("@soldsoul86/policy: the guard");
     completed === 5, `completed ${completed}`);
 }
 
-section("@soldsoul86/policy: receipts that verify without trusting the issuer");
+section("@spendcap/policy: receipts that verify without trusting the issuer");
 let req, decision, facts, ledgerEntries;
 {
   const journal = await Journal.open({ store: new MemoryJournalStore(), device: "a", lane: "a", now: () => NOW });
@@ -183,7 +183,7 @@ let req, decision, facts, ledgerEntries;
   check("a redacted receipt is reported PARTIAL, never quietly verified", !redacted.verified && redacted.partial);
 }
 
-section("@soldsoul86/policy: signatures");
+section("@spendcap/policy: signatures");
 {
   const pem = (k) => k.export({ type: k.type === "private" ? "pkcs8" : "spki", format: "pem" });
   const { privateKey, publicKey } = generateKeyPairSync("ed25519");
@@ -207,7 +207,7 @@ section("@soldsoul86/policy: signatures");
     verifySignedQuote(signed, offline).disposition === "signer_resolution_failed");
 }
 
-section("@soldsoul86/policy: commitments");
+section("@spendcap/policy: commitments");
 {
   const sha256empty = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
   check("the empty tree root is SHA-256 of nothing, per RFC 6962", emptyRoot() === sha256empty);
@@ -245,12 +245,12 @@ section("@soldsoul86/policy: commitments");
 }
 
 /* -------------------------------------------------------------- anthropic */
-section("@soldsoul86/anthropic: the SDK behind the guard");
+section("@spendcap/anthropic: the SDK behind the guard");
 {
   // The real SDK client, with `fetch` replaced so no network is involved.
   // Everything else is genuine: APIPromise, MessageStream, the error classes.
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
-  const { guardMessages, SpendRefusedError, SpendDuplicateError, estimateTokens } = await import("@soldsoul86/anthropic");
+  const { guardMessages, SpendRefusedError, SpendDuplicateError, estimateTokens } = await import("@spendcap/anthropic");
 
   const calls = [];
   let mode = "ok";
@@ -349,7 +349,7 @@ section("@soldsoul86/anthropic: the SDK behind the guard");
     exhausted instanceof SpendRefusedError && exhausted.decision.reason === "BUDGET_EXHAUSTED" && total < 40_000n);
 }
 
-section("@soldsoul86/x402: a retry pays once");
+section("@spendcap/x402: a retry pays once");
 {
   // The real x402 client and the real reference fetch wrapper. Only the scheme
   // (which would hold a key) and the network (a resource server plus its
@@ -357,7 +357,7 @@ section("@soldsoul86/x402: a retry pays once");
   const { randomUUID } = await import("node:crypto");
   const { x402Client, wrapFetchWithPayment } = await import("@x402/fetch");
   const { encodePaymentRequiredHeader, encodePaymentResponseHeader, decodePaymentSignatureHeader } = await import("@x402/core/http");
-  const { guardX402, purchaseId, SpendRefusedError, SpendDuplicateError } = await import("@soldsoul86/x402");
+  const { guardX402, purchaseId, SpendRefusedError, SpendDuplicateError } = await import("@spendcap/x402");
 
   const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
   const ASSET = `eip155:8453/${USDC}`;

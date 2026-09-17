@@ -1,5 +1,5 @@
 /**
- * @soldsoul86/anthropic — the Anthropic SDK behind a spend guard.
+ * @spendcap/anthropic — the Anthropic SDK behind a spend guard.
  *
  * Swap `client.messages.create(...)` for `guarded.create(...)` and every call
  * is decided by your policy first, reserved against your budget, and settled

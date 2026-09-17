@@ -1,4 +1,4 @@
-# @soldsoul86/x402
+# @spendcap/x402
 
 x402 behind a spend guard. The policy decides before anything is signed, the
 budget is reserved before the authorization exists, and a retry of the same
@@ -6,14 +6,14 @@ purchase presents the same authorization instead of minting a new one and
 paying twice.
 
 ```bash
-npm install @soldsoul86/x402 @soldsoul86/policy @x402/core
+npm install @spendcap/x402 @spendcap/policy @x402/core
 ```
 
 ```ts
 import { x402Client } from "@x402/core/client";
 import { ExactEvmScheme } from "@x402/evm";
-import { SpendGuard, MemoryLedgerStore, singlePolicy } from "@soldsoul86/policy";
-import { guardX402, SpendRefusedError } from "@soldsoul86/x402";
+import { SpendGuard, MemoryLedgerStore, singlePolicy } from "@spendcap/policy";
+import { guardX402, SpendRefusedError } from "@spendcap/x402";
 
 const USDC_BASE = "eip155:8453/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const policy = {

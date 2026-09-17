@@ -11,7 +11,7 @@
  * is the only sane default for a limit: forgetting to scope a rule must mean
  * "applies to all", never "applies to none".
  */
-import { canonicalJson } from "@soldsoul86/journal";
+import { canonicalJson } from "@spendcap/journal";
 import { createHash } from "node:crypto";
 import type { Amount, AssetId } from "./model.js";
 import type { AssetUnit } from "./units.js";

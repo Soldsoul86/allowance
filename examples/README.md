@@ -22,8 +22,8 @@ node examples/05-two-person-approval.mjs   # just one
 | 08 | Declared units catch a scale mistake and a typo'd asset | `units` on the policy |
 | 09 | Independent budgets per asset; owner and agents differ | several `WINDOW_BUDGET` rules |
 | 10 | Ledger on disk survives a restart; ambiguous failure reconciled; receipt verifies | `JournalLedgerStore`, `reconcile`, `verifyReceipt` |
-| 11 | The Anthropic SDK behind the guard, with a model allowlist and a token budget | `@soldsoul86/anthropic`, `DESTINATION_ALLOWLIST`, `WINDOW_BUDGET` |
-| 12 | x402: a retry after a lost response pays once, not twice; the reference client pays twice | `@soldsoul86/x402`, `PER_TRANSACTION_LIMIT`, `DESTINATION_ALLOWLIST`, `reconcile` |
+| 11 | The Anthropic SDK behind the guard, with a model allowlist and a token budget | `@spendcap/anthropic`, `DESTINATION_ALLOWLIST`, `WINDOW_BUDGET` |
+| 12 | x402: a retry after a lost response pays once, not twice; the reference client pays twice | `@spendcap/x402`, `PER_TRANSACTION_LIMIT`, `DESTINATION_ALLOWLIST`, `reconcile` |
 
 Every limit in these files is a field you can change: the asset name, the
 number, the window, and who the rule applies to. Nothing is hard-coded in the
