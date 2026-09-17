@@ -1,6 +1,6 @@
 {
   "name": "@spendcap/x402",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "x402 behind a spend guard: the policy decides before anything is signed, and a retry presents the same authorization instead of paying twice.",
   "keywords": [
     "x402",

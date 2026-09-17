@@ -28,7 +28,10 @@ const makeServer = () => {
   return { fetch, settled, loseNextResponse: () => { dropNext = true; } };
 };
 const scheme = { scheme: "exact", createPaymentPayload: async (x402Version, req) => ({ x402Version, payload: { nonce: randomUUID(), amount: req.amount, signature: "0xsig" } }) };
-const newClient = () => new x402Client().register(terms.network, scheme).setSpendControls(false);
+// The client's own spend controls stay ON: `allowedAssets: true` admits this
+// token, and the default $1 per-payment cap still applies. The double payment
+// below is not the result of switching a safety feature off.
+const newClient = () => new x402Client().register(terms.network, scheme).setSpendControls({ allowedAssets: true });
 const buy = async (fetchWithPay) => {
   try { const r = await fetchWithPay("https://data.example/quote"); return `${r.status} ${await r.text()}`; }
   catch (e) { return `${e.name}: ${e.message}`; }

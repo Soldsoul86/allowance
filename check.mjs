@@ -384,7 +384,12 @@ section("@spendcap/x402: a retry pays once");
   };
   let signatures = 0;
   const scheme = { scheme: "exact", createPaymentPayload: async (x402Version, req) => { signatures += 1; return { x402Version, payload: { nonce: randomUUID(), amount: req.amount } }; } };
-  const newClient = () => new x402Client().register(terms.network, scheme).setSpendControls(false);
+  // The client's own spend controls are left ON. `allowedAssets: true` admits
+  // the test token; the default $1 per-payment cap still applies. Disabling
+  // them entirely would invite the reading that the defect below is an
+  // artifact of switching off a safety feature. It is not -- see the property
+  // immediately after the reproduction.
+  const newClient = () => new x402Client().register(terms.network, scheme).setSpendControls({ allowedAssets: true });
   const attempt = (pay) => pay("https://data.example/quote").then((r) => r.status, (e) => e);
   const policy = { account: "acct", version: 1, rules: [
     { id: "cap", kind: "PER_TRANSACTION_LIMIT", scope: { kind: "ANY" }, asset: ASSET, maxAmount: 50_000n },
@@ -401,6 +406,21 @@ section("@spendcap/x402: a retry pays once");
   const again = await attempt(pay);
   check("the defect is real: the reference client retried after a lost response pays twice",
     lost instanceof TypeError && again === 200 && server.settled.size === 2);
+
+  // The first thing anyone reading the above will ask. `SpendControls` is a
+  // per-payment USD cap plus an asset allowlist; it holds no ledger, so it
+  // cannot tell a retry from a new purchase. Two $0.01 payments are two valid
+  // $0.01 payments. Asserted with the cap set explicitly, not merely defaulted.
+  const capped = makeServer();
+  const cappedClient = new x402Client()
+    .register(terms.network, scheme)
+    .setSpendControls({ allowedAssets: true, maxAmountPerPayment: "$1" });
+  const cappedPay = wrapFetchWithPayment(capped.fetch, cappedClient);
+  capped.loseNextResponse();
+  const cappedLost = await attempt(cappedPay);
+  const cappedAgain = await attempt(cappedPay);
+  check("an explicit per-payment cap on the reference client does not prevent it either",
+    cappedLost instanceof TypeError && cappedAgain === 200 && capped.settled.size === 2);
 
   server = makeServer();
   let { store, guard } = fresh();

@@ -47,6 +47,20 @@ has paid twice for one resource. The maintainers have it on file as
 `examples/12-x402-retry-pays-once.mjs` reproduces it against the real
 reference wrapper, then shows the same client paying once behind the guard.
 
+**Why the client's own spend controls do not prevent it.** `SpendControls` is
+a per-payment USD cap plus an asset allowlist. It holds no ledger and no
+record of what has already been paid, so it cannot tell a retry from a new
+purchase: two $0.01 payments are two valid $0.01 payments, and both are under
+a $1 cap. The reproduction leaves those controls **enabled** — with
+`allowedAssets: true` to admit the test token and the cap set explicitly to
+`$1` — and the double payment happens exactly as it does with them off. There
+is a check for that, immediately after the one that reproduces the defect.
+
+This is not a criticism of the cap. A cap bounds the size of one payment,
+which is a different question from how many payments a purchase becomes. Only
+something that remembers the purchase can answer the second, which is why this
+package puts a ledger in front of the signature rather than a larger cap.
+
 **Two layers.** `guardX402(client, options)` registers hooks on the
 `x402Client`. Whatever drives that client afterwards, the reference
 `wrapFetchWithPayment`, axios, your own code, the policy runs before every
