@@ -11,6 +11,7 @@ covered by the copyright above. Those pulled in at build or run time include:
   - TypeScript                    Apache-2.0  (build)
   - @types/node                   MIT         (build)
   - @anthropic-ai/sdk             MIT         (types only, peer of @soldsoul86/anthropic)
+  - @x402/core                    Apache-2.0  (runtime peer of @soldsoul86/x402)
   - snarkjs                       GPL-3.0     (runtime, @soldsoul86/circuit)
   - circomlibjs                   GPL-3.0     (runtime, @soldsoul86/circuit)
   - circom                        GPL-3.0     (build,   @soldsoul86/circuit)
@@ -29,7 +30,8 @@ It is a separate package for exactly this reason. `@soldsoul86/policy` and
 `@soldsoul86/journal` have **no third-party runtime dependencies at all**, and
 depending on them pulls in nothing GPL-licensed. `@soldsoul86/anthropic` adds
 only a peer dependency on the Anthropic SDK, which it uses for its types and
-never imports at runtime.
+never imports at runtime. `@soldsoul86/x402` adds a runtime peer dependency on
+`@x402/core`, Apache-2.0, for the client hooks and header codecs.
 
 That absence was not an accident. The engine that decides whether money moves
 was kept dependency-free so it could run anywhere, offline, with nothing

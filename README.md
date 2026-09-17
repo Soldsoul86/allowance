@@ -21,6 +21,7 @@ Programmable spend authority for AI agents, published on npm under the
 | [`@soldsoul86/journal`](packages/journal) | Append-only, hash-chained history. Zero dependencies |
 | [`@soldsoul86/circuit`](packages/circuit) | Prove a spend stayed inside a budget without revealing the budget |
 | [`@soldsoul86/anthropic`](packages/anthropic) | The Anthropic SDK behind the guard: swap one import, every call is decided, reserved and settled |
+| [`@soldsoul86/x402`](packages/x402) | x402 behind the guard: the policy decides before anything is signed, and a retry pays once |
 
 ```bash
 npm install @soldsoul86/policy
@@ -31,7 +32,7 @@ npm install && npm run build
 npm run check      # exercises every claim above against the built output
 ```
 
-[`examples/`](examples) holds ten situations with the exact policy that handles
+[`examples/`](examples) holds twelve situations with the exact policy that handles
 each; `npm run examples` runs them all.
 
 **Releasing.** Bump the version of each package that changed, and the pin in

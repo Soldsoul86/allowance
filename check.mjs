@@ -349,5 +349,162 @@ section("@soldsoul86/anthropic: the SDK behind the guard");
     exhausted instanceof SpendRefusedError && exhausted.decision.reason === "BUDGET_EXHAUSTED" && total < 40_000n);
 }
 
+section("@soldsoul86/x402: a retry pays once");
+{
+  // The real x402 client and the real reference fetch wrapper. Only the scheme
+  // (which would hold a key) and the network (a resource server plus its
+  // facilitator, as one fake fetch) are stubbed.
+  const { randomUUID } = await import("node:crypto");
+  const { x402Client, wrapFetchWithPayment } = await import("@x402/fetch");
+  const { encodePaymentRequiredHeader, encodePaymentResponseHeader, decodePaymentSignatureHeader } = await import("@x402/core/http");
+  const { guardX402, purchaseId, SpendRefusedError, SpendDuplicateError } = await import("@soldsoul86/x402");
+
+  const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  const ASSET = `eip155:8453/${USDC}`;
+  const terms = { scheme: "exact", network: "eip155:8453", asset: USDC, amount: "10000", payTo: "0xSeller", maxTimeoutSeconds: 60, extra: {} };
+  const makeServer = (opts = {}) => {
+    const settled = new Map();
+    let dropNext = false;
+    let price = terms.amount;
+    let rejectReplays = false;
+    const fetch = async (input, init) => {
+      const req = new Request(input, init);
+      const signature = req.headers.get("PAYMENT-SIGNATURE");
+      const required = () => ({ x402Version: 2, resource: { url: "https://data.example/quote" }, accepts: [{ ...terms, amount: price }] });
+      if (!signature) return new Response("", { status: 402, headers: { "PAYMENT-REQUIRED": encodePaymentRequiredHeader(required()) } });
+      if (opts.verify === "fail") return new Response("", { status: 402, headers: { "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ ...required(), error: "invalid_signature" }) } });
+      const { nonce } = decodePaymentSignatureHeader(signature).payload;
+      if (rejectReplays && settled.has(nonce)) return new Response("", { status: 402, headers: { "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ ...required(), error: "invalid_exact_evm_payload_authorization_nonce_used" }) } });
+      if (opts.settle === "fail") return new Response("", { status: 402, headers: { "PAYMENT-RESPONSE": encodePaymentResponseHeader({ success: false, errorReason: "insufficient_funds", transaction: "", network: terms.network }) } });
+      if (!settled.has(nonce)) settled.set(nonce, { success: true, transaction: `0xtx${settled.size + 1}`, network: terms.network, payer: "0xAgent", amount: opts.settledAmount });
+      if (dropNext) { dropNext = false; throw new TypeError("fetch failed"); }
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "PAYMENT-RESPONSE": encodePaymentResponseHeader(settled.get(nonce)) } });
+    };
+    return { fetch, settled, loseNextResponse: () => { dropNext = true; }, reprice: (p) => { price = p; }, rejectReplays: () => { rejectReplays = true; } };
+  };
+  let signatures = 0;
+  const scheme = { scheme: "exact", createPaymentPayload: async (x402Version, req) => { signatures += 1; return { x402Version, payload: { nonce: randomUUID(), amount: req.amount } }; } };
+  const newClient = () => new x402Client().register(terms.network, scheme).setSpendControls(false);
+  const attempt = (pay) => pay("https://data.example/quote").then((r) => r.status, (e) => e);
+  const policy = { account: "acct", version: 1, rules: [
+    { id: "cap", kind: "PER_TRANSACTION_LIMIT", scope: { kind: "ANY" }, asset: ASSET, maxAmount: 50_000n },
+    { id: "services", kind: "DESTINATION_ALLOWLIST", scope: { kind: "ANY" }, destinations: ["x402:data.example"] },
+  ]};
+  const buyer = { kind: "AGENT", agentId: "buyer" };
+  const fresh = () => { const store = new MemoryLedgerStore(); return { store, guard: new SpendGuard({ store, policyFor: singlePolicy(policy), clock: new ManualClock(NOW) }) }; };
+  const states = async (store) => (await store.entries("acct")).map((e) => e.state);
+
+  let server = makeServer();
+  let pay = wrapFetchWithPayment(server.fetch, newClient());
+  server.loseNextResponse();
+  const lost = await attempt(pay);
+  const again = await attempt(pay);
+  check("the defect is real: the reference client retried after a lost response pays twice",
+    lost instanceof TypeError && again === 200 && server.settled.size === 2);
+
+  server = makeServer();
+  let { store, guard } = fresh();
+  let guarded = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  pay = guarded.fetch(server.fetch);
+  signatures = 0;
+  server.loseNextResponse();
+  const first = await attempt(pay);
+  const held = guarded.unresolved();
+  check("a lost response leaves the reservation open and the authorization held",
+    first instanceof TypeError && (await states(store)).join() === "PENDING" && held.length === 1 && held[0].authorized);
+  const second = await attempt(pay);
+  check("the retry presents the same authorization: one signature, one settlement, ledger settled",
+    second === 200 && signatures === 1 && server.settled.size === 1 && (await states(store)).join() === "SETTLED" && guarded.unresolved().length === 0);
+  const third = await attempt(pay);
+  check("a further attempt at a settled purchase is refused, not repaid",
+    third instanceof SpendDuplicateError && third.existing.state === "SETTLED" && server.settled.size === 1);
+
+  server = makeServer();
+  ({ store, guard } = fresh());
+  guarded = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  pay = wrapFetchWithPayment(server.fetch, guarded.client);
+  server.loseNextResponse();
+  await attempt(pay);
+  const viaReference = await attempt(pay);
+  check("the reference wrapper driving a guarded client cannot be made to sign twice",
+    viaReference instanceof Error && /would pay twice/.test(viaReference.message) && server.settled.size === 1);
+
+  server = makeServer();
+  server.reprice("5000000");
+  ({ store, guard } = fresh());
+  signatures = 0;
+  const refused = await attempt(guardX402(newClient(), { guard, account: "acct", requester: buyer }).fetch(server.fetch));
+  check("a purchase over the per-transaction cap is refused before the scheme signs anything",
+    refused instanceof SpendRefusedError && refused.decision.reason === "TRANSACTION_TOO_LARGE" && signatures === 0 && server.settled.size === 0);
+
+  server = makeServer({ verify: "fail" });
+  ({ store, guard } = fresh());
+  const unverified = await attempt(guardX402(newClient(), { guard, account: "acct", requester: buyer }).fetch(server.fetch));
+  check("a payment the facilitator refuses to verify is reversed: nothing moved",
+    unverified === 402 && (await states(store)).join() === "REVERSED");
+
+  server = makeServer({ settle: "fail" });
+  ({ store, guard } = fresh());
+  const unsettled = await attempt(guardX402(newClient(), { guard, account: "acct", requester: buyer }).fetch(server.fetch));
+  check("a settlement the facilitator reports as failed is reversed",
+    unsettled === 402 && (await states(store)).join() === "REVERSED");
+
+  server = makeServer({ settledAmount: "9000" });
+  ({ store, guard } = fresh());
+  await attempt(guardX402(newClient(), { guard, account: "acct", requester: buyer }).fetch(server.fetch));
+  check("the ledger settles at the amount the facilitator reports, not the amount offered",
+    (await store.entries("acct"))[0].amount === 9_000n);
+
+  server = makeServer();
+  ({ store, guard } = fresh());
+  guarded = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  server.loseNextResponse();
+  await attempt(guarded.fetch(server.fetch));
+  const restarted = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  const afterRestart = await attempt(restarted.fetch(server.fetch));
+  check("after a restart the retry is refused rather than re-signed, because the outcome is unknown",
+    afterRestart instanceof SpendDuplicateError && afterRestart.existing.state === "PENDING" && server.settled.size === 1);
+  const clock = new ManualClock(NOW + 1);
+  const report = await new SpendGuard({ store, policyFor: singlePolicy(policy), clock })
+    .reconcile({ observe: async (e) => ({ state: "SETTLED", actualAmount: e.amount }) }, 0);
+  check("reconciliation against the chain closes it", report.settled.length === 1 && (await states(store)).join() === "SETTLED");
+
+  server = makeServer();
+  ({ store, guard } = fresh());
+  guarded = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  server.loseNextResponse();
+  await attempt(guarded.fetch(server.fetch));
+  server.reprice("20000");
+  const repriced = await attempt(guarded.fetch(server.fetch));
+  check("a server that quotes new terms on the retry gets a new purchase, judged afresh",
+    repriced === 200 && server.settled.size === 2 && (await states(store)).join() === "PENDING,SETTLED");
+  const keyed = await guarded.fetch(server.fetch)("https://data.example/quote", { purchase: "order-1" }).then((r) => r.status, (e) => e);
+  const keyedAgain = await guarded.fetch(server.fetch)("https://data.example/quote", { purchase: "order-1" }).then((r) => r.status, (e) => e);
+  check("a caller-supplied purchase key names the purchase: the same key is one purchase",
+    keyed === 200 && keyedAgain instanceof SpendDuplicateError);
+
+  // A facilitator that consumed the nonce the first time refuses it the second
+  // time with the same 402 it uses for a bad signature. That refusal must not
+  // be read as "nothing moved".
+  server = makeServer();
+  ({ store, guard } = fresh());
+  guarded = guardX402(newClient(), { guard, account: "acct", requester: buyer });
+  signatures = 0;
+  server.loseNextResponse();
+  await attempt(guarded.fetch(server.fetch));
+  server.rejectReplays();
+  const rePresented = await attempt(guarded.fetch(server.fetch));
+  const stillOpen = await attempt(guarded.fetch(server.fetch));
+  check("a re-presented authorization the facilitator refuses is held, not reversed, and not signed again",
+    rePresented === 402 && (await states(store)).join() === "PENDING" && stillOpen instanceof SpendDuplicateError
+      && server.settled.size === 1 && signatures === 1);
+
+  const pr = { x402Version: 2, resource: { url: "https://data.example/quote" }, accepts: [terms] };
+  check("purchaseId depends on the buyer, the resource and the terms, and on nothing the client mints",
+    purchaseId("acct", buyer, pr) === purchaseId("acct", buyer, structuredClone(pr))
+      && purchaseId("acct", buyer, pr) !== purchaseId("acct", { kind: "AGENT", agentId: "other" }, pr)
+      && purchaseId("acct", buyer, pr) !== purchaseId("acct", buyer, { ...pr, accepts: [{ ...terms, amount: "10001" }] }));
+}
+
 process.stdout.write(failures === 0 ? "\nall checks passed\n" : `\n${failures} check(s) FAILED\n`);
 process.exit(failures === 0 ? 0 : 1);

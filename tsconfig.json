@@ -12,6 +12,9 @@
     },
     {
       "path": "./packages/anthropic"
+    },
+    {
+      "path": "./packages/x402"
     }
   ]
 }
